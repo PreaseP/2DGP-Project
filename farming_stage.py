@@ -1,6 +1,7 @@
 import random
 from pico2d import *
 
+from slime import Slime
 import game_framework
 import game_world
 
@@ -15,6 +16,9 @@ def handle_events():
 def init():
     global map
     map = load_image('resources/background/farming.png')
+
+    slimes = [Slime() for _ in range(10)]
+    game_world.add_objects(slimes, 1)
 
 def update():
     game_world.update()
