@@ -5,6 +5,8 @@ from slime import Slime
 import game_framework
 import game_world
 
+spawn_timer = 0.0
+
 def handle_events():
     event_list = get_events()
     for event in event_list:
@@ -17,10 +19,21 @@ def init():
     global map
     map = load_image('resources/background/farming.png')
 
+    spawn_timer = 0.0
+
     slimes = [Slime() for _ in range(10)]
     game_world.add_objects(slimes, 1)
 
 def update():
+    global spawn_timer
+
+    spawn_timer += game_framework.frame_time
+
+    if spawn_timer >= 10.0:
+        slime = Slime()
+        game_world.add_object(slime, 1)
+        spawn_timer = 0.0
+
     game_world.update()
     game_world.handle_collisions()
 
