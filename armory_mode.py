@@ -1,9 +1,8 @@
 from pico2d import *
 
-
+import cockpit_mode
 import game_framework
-import lab_mode
-import armory_mode
+
 
 def handle_events():
     event_list = get_events()
@@ -12,16 +11,13 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_a:
-            pass
         elif event.type == SDL_KEYDOWN and event.key == SDLK_UP:
-            game_framework.change_mode(lab_mode)
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_DOWN:
-            game_framework.change_mode(armory_mode)
+            game_framework.change_mode(cockpit_mode)
+
 
 def init():
     global image, font
-    image = load_image('resources/background/cockpit.png')
+    image = load_image('resources/background/armory.png')
     font = load_font('resources/DungGeunMo.TTF', 50)
 
 def update():
