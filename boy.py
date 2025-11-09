@@ -4,7 +4,6 @@ from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT
 import game_world
 import game_framework
 
-from ball import Ball
 from state_machine import StateMachine
 
 
@@ -43,11 +42,6 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
-
-
-
-
-
 
 class Idle:
 
