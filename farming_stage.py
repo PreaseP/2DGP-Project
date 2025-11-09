@@ -1,11 +1,14 @@
 import random
 from pico2d import *
 
+from player import Player
 from slime import Slime
 import game_framework
 import game_world
 
 spawn_timer = 0.0
+
+player = None
 
 def handle_events():
     event_list = get_events()
@@ -14,12 +17,19 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
+        else:
+            player.handle_event(event)
 
 def init():
     global map
     map = load_image('resources/background/farming.png')
 
+    global spawn_timer
     spawn_timer = 0.0
+
+    global player
+    player = Player()
+    game_world.add_object(player, 1)
 
     slimes = [Slime() for _ in range(10)]
     game_world.add_objects(slimes, 1)
