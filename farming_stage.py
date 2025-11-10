@@ -29,6 +29,7 @@ def init():
 
     global player
     player = Player()
+    player.xdir = -1
     game_world.add_object(player, 1)
 
     slimes = [Slime() for _ in range(10)]
