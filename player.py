@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, load_font, draw_rectangle
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_UP, SDLK_DOWN, SDL_MOUSEBUTTONDOWN
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
@@ -15,11 +15,17 @@ def space_down(e): # e is space down ?
 def mouse_click(e):
     return e[0] == 'INPUT' and e[1].type == SDL_MOUSEBUTTONDOWN
 
+def mouse_release(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_MOUSEBUTTONUP
+
 def event_stop(e):
     return e[0] == 'STOP'
 
 def event_run(e):
     return e[0] == 'RUN'
+
+def event_attack(e):
+    return e[0] == 'ATTACK'
 
 # Player의 Run Speed 계산
 
@@ -113,7 +119,7 @@ class Attack:
 
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
-        effect = SwordEffect(self.player.x + self.player.face_dir * 50, self.player.y, self.player.face_dir)
+        effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir)
         game_world.add_object(effect, 1)
 
     def exit(self, e):
@@ -126,8 +132,15 @@ class Attack:
         self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
         # 공격 애니메이션이 끝나면 상태 전환
 
+        if self.player.xdir != 0:
+            self.player.face_dir = self.player.xdir
+
         if self.player.frame >= FRAMES_PER_ATTACK:
-            if self.player.xdir == 0 and self.player.ydir == 0:
+            if self.player.attacking:
+              self.player.frame = 0
+              effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir)
+              game_world.add_object(effect, 1)
+            elif self.player.xdir == 0 and self.player.ydir == 0:
                 self.player.state_machine.cur_state = self.player.IDLE
             else:
                 self.player.state_machine.cur_state = self.player.RUN
@@ -161,6 +174,7 @@ class Player:
         self.ydir = 0
         self.image = load_image('resources/sprites/sword_move.png')
         self.attack = load_image('resources/sprites/sword_attack.png')
+        self.attacking = False
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
@@ -170,10 +184,10 @@ class Player:
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
                 self.IDLE: {event_run: self.RUN,
-                            mouse_click: self.ATTACK},
+                            event_attack: self.ATTACK},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
                 self.RUN: {event_stop: self.IDLE,
-                           mouse_click: self.ATTACK},
+                           event_attack: self.ATTACK},
                 self.ATTACK: {}
             }
         )
@@ -182,7 +196,7 @@ class Player:
         self.state_machine.update()
 
     def handle_event(self, event):
-        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s):
+        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP):
             cur_xdir, cur_ydir = self.xdir, self.ydir
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_a:
@@ -202,6 +216,13 @@ class Player:
                     self.ydir -= 1
                 elif event.key == SDLK_s:
                     self.ydir += 1
+            elif event.type == SDL_MOUSEBUTTONDOWN:
+                self.attacking = True
+                self.state_machine.handle_state_event(('ATTACK', event))
+            elif event.type == SDL_MOUSEBUTTONUP:
+                self.attacking = False
+                self.state_machine.handle_state_event(('INPUT', event))
+
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
                     self.state_machine.handle_state_event(('STOP', self.face_dir))  # 스탑 시 이전 방향 전달
