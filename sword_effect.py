@@ -13,23 +13,36 @@ effect_sprites = [
 class SwordEffect:
     image = None
 
-    def __init__(self, x = 400, y = 300, face_dir = 1):
+    def __init__(self, x = 400, y = 300, face_dir = 1, xdir = 0):
         if SwordEffect.image == None:
             SwordEffect.image = load_image('resources/sprites/sword_hit_effect.png')
-        self.x, self.y, self.face_dir = x, y, face_dir
+        self.x, self.y, self.face_dir, self.xdir = x, y, face_dir, xdir
+        if self.xdir == 0:
+            self.x += self.face_dir * 80
         self.frame = 0
 
     def draw(self):
-        if self.face_dir == 1:  # right
+        if self.xdir == 0:
+            if self.face_dir == 1:  # right
+                self.image.clip_composite_draw(effect_sprites[int(self.frame)][0],
+                                                   effect_sprites[int(self.frame)][1],
+                                                   effect_sprites[int(self.frame)][2], 32, 0, ' ', self.x,
+                                                   self.y, 75, 75)
+            else:
+                self.image.clip_composite_draw(effect_sprites[int(self.frame)][0],
+                                                effect_sprites[int(self.frame)][1],
+                                                effect_sprites[int(self.frame)][2], 32, 0, 'h', self.x,
+                                                self.y, 75, 75)
+        elif self.xdir == 1:
             self.image.clip_composite_draw(effect_sprites[int(self.frame)][0],
-                                               effect_sprites[int(self.frame)][1],
-                                               effect_sprites[int(self.frame)][2], 32, 0, ' ', self.x,
-                                               self.y, 75, 75)
+                                            effect_sprites[int(self.frame)][1],
+                                            effect_sprites[int(self.frame)][2], 32, 0, ' ',
+                                            self.x, self.y, 75, 75)
         else:
             self.image.clip_composite_draw(effect_sprites[int(self.frame)][0],
                                             effect_sprites[int(self.frame)][1],
-                                            effect_sprites[int(self.frame)][2], 32, 0, 'h', self.x,
-                                            self.y, 75, 75)
+                                            effect_sprites[int(self.frame)][2], 32, 0, 'h',
+                                            self.x, self.y, 75, 75)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
