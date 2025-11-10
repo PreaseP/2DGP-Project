@@ -15,29 +15,11 @@ def space_down(e): # e is space down ?
 def mouse_click(e):
     return e[0] == 'INPUT' and e[1].type == SDL_MOUSEBUTTONDOWN
 
-def right_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_d
+def event_stop(e):
+    return e[0] == 'STOP'
 
-def right_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_d
-
-def left_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
-
-def left_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_a
-
-def up_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_w
-
-def up_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_w
-
-def down_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_s
-
-def down_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_s
+def event_run(e):
+    return e[0] == 'RUN'
 
 # Player의 Run Speed 계산
 
@@ -64,7 +46,8 @@ class Idle:
         self.player = player
 
     def enter(self, e):
-        pass
+        if event_stop(e):
+            self.player.face_dir = e[1]  # 이전 방향 유지
 
     def exit(self, e):
         pass
@@ -91,37 +74,11 @@ class Run:
 
     def enter(self, e):
         # 키 입력에 따라 방향 설정
-        if right_down(e):
-            self.player.xdir += 1
-        if left_down(e):
-            self.player.xdir -= 1
-        if up_down(e):
-            self.player.ydir += 1
-        if down_down(e):
-            self.player.ydir -= 1
-
-        # 바라보는 방향 설정
-        if self.player.xdir > 0:
-            self.player.face_dir = 1
-        elif self.player.xdir < 0:
-            self.player.face_dir = -1
+        if self.player.xdir != 0:
+            self.player.face_dir = self.player.xdir
 
     def exit(self, e):
-        # 키를 뗄 때 해당 방향의 이동을 멈춤
-        if right_up(e):
-            self.player.xdir -= 1
-        if left_up(e):
-            self.player.xdir += 1
-        if up_up(e):
-            self.player.ydir -= 1
-        if down_up(e):
-            self.player.ydir += 1
-
-        if self.player.xdir > 0:
-            self.player.face_dir = 1
-        elif self.player.xdir < 0:
-            self.player.face_dir = -1
-
+        pass
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
@@ -129,11 +86,20 @@ class Run:
         self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
 
     def draw(self):
-        if self.player.face_dir == 1:  # right
-            self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
+        if self.player.xdir == 0:
+            if self.player.face_dir == 1:  # right
+                self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
+                                                      0, ' ', self.player.x, self.player.y, 75, 75)
+            else:  # face_dir == -1: # left
+                self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
+                                                      0, 'h', self.player.x, self.player.y, 75, 75)
+        elif self.player.xdir == 1:
+            self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
+                                                  run_sprites[int(self.player.frame)][1], 31, 22,
                                                   0, ' ', self.player.x, self.player.y, 75, 75)
-        else:  # face_dir == -1: # left
-            self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
+        else:
+            self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
+                                                  run_sprites[int(self.player.frame)][1], 31, 22,
                                                   0, 'h', self.player.x, self.player.y, 75, 75)
 
 attack_sprites = [
@@ -149,24 +115,9 @@ class Attack:
         self.player.frame = 0  # 공격 프레임 초기화
         effect = SwordEffect(self.player.x + self.player.face_dir * 50, self.player.y, self.player.face_dir)
         game_world.add_object(effect, 1)
-        if right_down(e):
-            self.player.xdir += 1
-        if left_down(e):
-            self.player.xdir -= 1
-        if up_down(e):
-            self.player.ydir += 1
-        if down_down(e):
-            self.player.ydir -= 1
 
     def exit(self, e):
-        if right_up(e):
-            self.player.xdir -= 1
-        if left_up(e):
-            self.player.xdir += 1
-        if up_up(e):
-            self.player.ydir -= 1
-        if down_up(e):
-            self.player.ydir += 1
+        pass
 
     def do(self):
         # 공격 애니메이션 프레임 업데이트
@@ -176,15 +127,29 @@ class Attack:
         # 공격 애니메이션이 끝나면 상태 전환
 
         if self.player.frame >= FRAMES_PER_ATTACK:
-            self.player.state_machine.cur_state = self.player.RUN
+            if self.player.xdir == 0 and self.player.ydir == 0:
+                self.player.state_machine.cur_state = self.player.IDLE
+            else:
+                self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
-        if self.player.face_dir == 1:  # right
-            self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
-                                                   attack_sprites[int(self.player.frame)][2], 31, 0, ' ', self.player.x - 5, self.player.y + 15, 100, 100)
-        else:  # face_dir == -1: # left
-            self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
-                                                   attack_sprites[int(self.player.frame)][2], 31, 0, 'h', self.player.x - 5, self.player.y + 15, 100, 100)
+        if self.player.xdir == 0:
+            if self.player.face_dir == 1:  # right
+                self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
+                                                       attack_sprites[int(self.player.frame)][2], 31, 0, ' ', self.player.x - 5, self.player.y + 15, 100, 100)
+            else:  # face_dir == -1: # left
+                self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
+                                                       attack_sprites[int(self.player.frame)][2], 31, 0, 'h', self.player.x - 5, self.player.y + 15, 100, 100)
+        elif self.player.xdir == 1:
+            self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0],
+                                                   attack_sprites[int(self.player.frame)][1],
+                                                   attack_sprites[int(self.player.frame)][2], 31, 0, ' ',
+                                                   self.player.x - 5, self.player.y + 15, 100, 100)
+        else:
+            self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0],
+                                                   attack_sprites[int(self.player.frame)][1],
+                                                   attack_sprites[int(self.player.frame)][2], 31, 0, 'h',
+                                                   self.player.x - 5, self.player.y + 15, 100, 100)
 
 class Player:
     def __init__(self):
@@ -204,11 +169,10 @@ class Player:
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
-                self.IDLE: {right_down: self.RUN, left_down: self.RUN, up_down: self.RUN, down_down: self.RUN,
+                self.IDLE: {event_run: self.RUN,
                             mouse_click: self.ATTACK},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
-                self.RUN: {right_down: self.RUN, left_down: self.RUN, up_down: self.RUN, down_down: self.RUN,
-                           right_up: self.RUN, left_up: self.RUN, up_up: self.RUN, down_up: self.RUN,
+                self.RUN: {event_stop: self.IDLE,
                            mouse_click: self.ATTACK},
                 self.ATTACK: {}
             }
@@ -216,14 +180,35 @@ class Player:
 
     def update(self):
         self.state_machine.update()
-        # 모든 이동이 멈추면 IDLE 상태로 전환
-        if self.state_machine.cur_state == self.RUN and self.xdir == 0 and self.ydir == 0:
-            self.state_machine.cur_state = self.IDLE
 
     def handle_event(self, event):
-        self.state_machine.handle_state_event(('INPUT', event))
-        pass
-
+        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s):
+            cur_xdir, cur_ydir = self.xdir, self.ydir
+            if event.type == SDL_KEYDOWN:
+                if event.key == SDLK_a:
+                    self.xdir -= 1
+                elif event.key == SDLK_d:
+                    self.xdir += 1
+                elif event.key == SDLK_w:
+                    self.ydir += 1
+                elif event.key == SDLK_s:
+                    self.ydir -= 1
+            elif event.type == SDL_KEYUP:
+                if event.key == SDLK_a:
+                    self.xdir += 1
+                elif event.key == SDLK_d:
+                    self.xdir -= 1
+                elif event.key == SDLK_w:
+                    self.ydir -= 1
+                elif event.key == SDLK_s:
+                    self.ydir += 1
+            if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
+                if self.xdir == 0 and self.ydir == 0:  # 멈춤
+                    self.state_machine.handle_state_event(('STOP', self.face_dir))  # 스탑 시 이전 방향 전달
+                else:  # 움직임
+                    self.state_machine.handle_state_event(('RUN', None))
+        else:
+            self.state_machine.handle_state_event(('INPUT', event))
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
