@@ -13,13 +13,14 @@ effect_sprites = [
 class SwordEffect:
     image = None
 
-    def __init__(self, x = 400, y = 300, face_dir = 1, xdir = 0):
+    def __init__(self, x = 400, y = 300, face_dir = 1, xdir = 0, atk = 10):
         if SwordEffect.image == None:
             SwordEffect.image = load_image('resources/sprites/sword_hit_effect.png')
         self.x, self.y, self.face_dir, self.xdir = x, y, face_dir, xdir
         if self.xdir == 0:
             self.x += self.face_dir * 80
         self.frame = 0
+        self.atk = atk
 
     def draw(self):
         if self.xdir == 0:

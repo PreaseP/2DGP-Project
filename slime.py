@@ -40,6 +40,14 @@ class Slime:
         else:
             self.ydir = random.choice([-1, 1])
         self.move_timer = 0.0
+        self.hp = 40
+        self.font = load_font('resources/DungGeunMo.TTF', 20)
+
+        self.damage_timer = 0.0
+        self.damage_amount = 0
+
+        self.protect_timer = 0.0
+        self.protect = False
 
     def get_bb(self):
         return self.x - 40, self.y - 40, self.x + 40, self.y + 30
@@ -69,6 +77,18 @@ class Slime:
             if self.y < 0 + 50 or self.y > 720 - 50:
                 self.ydir *= -1
 
+        if self.damage_timer > 0.0:
+            self.damage_timer -= game_framework.frame_time
+            if self.damage_timer < 0.0:
+                self.damage_timer = 0.0
+                self.damage_amount = 0
+
+        if self.protect_timer > 0.0:
+            self.protect_timer -= game_framework.frame_time
+            if self.protect_timer < 0.0:
+                self.protect_timer = 0.0
+                self.protect = False
+
     def draw(self):
         sprite_x = slime_sprite[self.type][int(self.frame)][0]
         sprite_y = slime_sprite[self.type][int(self.frame)][1]
@@ -80,12 +100,21 @@ class Slime:
             Slime.image.clip_composite_draw(sprite_x, sprite_y, slime_size[0], slime_size[1],
                                        0, ' ', self.x, self.y, 75, 75)
 
+        if self.damage_timer > 0.0 and self.damage_amount:
+            self.font.draw(self.x + 40, self.y + 40, f'{self.damage_amount}', (255, 0, 0))
+
         draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
         pass
 
     def handle_collision(self, group, other):
-        if group == 'sword:monster' and other.frame < 1.0:
-            game_world.remove_object(self)
+        if group == 'sword:monster' and self.protect == False and other.frame < 1.0:
+            self.hp -= other.atk
+            self.damage_amount = other.atk
+            self.damage_timer = 0.6
+            self.protect = True
+            self.protect_timer = 0.6
+            if self.hp <= 0:
+                game_world.remove_object(self)
 

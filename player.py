@@ -119,7 +119,7 @@ class Attack:
 
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
-        effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir)
+        effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk)
         game_world.add_object(effect, 1)
         game_world.add_collision_pair('sword:monster', effect, None)
 
@@ -176,6 +176,7 @@ class Player:
         self.image = load_image('resources/sprites/sword_move.png')
         self.attack = load_image('resources/sprites/sword_attack.png')
         self.attacking = False
+        self.atk = 10
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
