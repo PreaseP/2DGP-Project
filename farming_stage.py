@@ -45,6 +45,7 @@ def update():
     if spawn_timer >= 10.0:
         slime = Slime()
         game_world.add_object(slime, 1)
+        game_world.add_collision_pair('sword:monster', None, slime)
         spawn_timer = 0.0
 
     game_world.update()

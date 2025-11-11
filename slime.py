@@ -11,7 +11,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 4.0
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_KMPH = 5.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -34,12 +34,40 @@ class Slime:
         self.frame = random.randint(0, 3)
         self.type = random.randint(0, 2)
         self.dir = random.choice([-1,1])
+        self.xdir = self.ydir = 0
+        if random.randint(0, 10) < 5:
+            self.xdir = self.dir
+        else:
+            self.ydir = random.choice([-1, 1])
+        self.move_timer = 0.0
 
     def get_bb(self):
         return self.x - 40, self.y - 40, self.x + 40, self.y + 30
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        self.x += self.xdir * RUN_SPEED_PPS * game_framework.frame_time
+        self.y += self.ydir * RUN_SPEED_PPS * game_framework.frame_time
+        self.move_timer += game_framework.frame_time
+        if self.move_timer >= 2.0:
+            if self.xdir or self.ydir:
+                self.xdir = self.ydir = 0
+            else:
+                if random.randint(0, 10) < 5:
+                    self.dir = random.choice([-1, 1])
+                    self.xdir = self.dir
+                    self.move_timer = 0.0
+                else:
+                    self.ydir = random.choice([-1,1])
+                    self.move_timer = 0.0
+
+        if self.xdir:
+            if self.x < 0 + 50 or self.x > 1280 - 50:
+                self.xdir *= -1
+                self.dir *= -1
+        if self.ydir:
+            if self.y < 0 + 50 or self.y > 720 - 50:
+                self.ydir *= -1
 
     def draw(self):
         sprite_x = slime_sprite[self.type][int(self.frame)][0]
