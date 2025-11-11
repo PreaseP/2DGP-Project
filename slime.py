@@ -10,6 +10,12 @@ TIME_PER_ACTION = 0.7
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 4.0
 
+PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
+RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
 slime_sprite = [
     [(0, 26), (26, 26), (54, 26), (80, 26)],
     [(0, 80), (26, 80), (54, 80), (80, 81)],
@@ -50,4 +56,8 @@ class Slime:
 
     def handle_event(self, event):
         pass
+
+    def handle_collision(self, group, other):
+        if group == 'sword:monster':
+            game_world.remove_object(self)
 

@@ -41,7 +41,7 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
-# Player Move Action Speed
+# Player attack Action Speed
 TIME_PER_ATTACK = 0.5
 ATTACK_PER_TIME = 1.0 / TIME_PER_ATTACK
 FRAMES_PER_ATTACK = 7
@@ -121,6 +121,7 @@ class Attack:
         self.player.frame = 0  # 공격 프레임 초기화
         effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir)
         game_world.add_object(effect, 1)
+        game_world.add_collision_pair('sword:monster', effect, None)
 
     def exit(self, e):
         pass

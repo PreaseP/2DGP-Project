@@ -33,6 +33,8 @@ def init():
     game_world.add_object(player, 1)
 
     slimes = [Slime() for _ in range(10)]
+    for slime in slimes:
+        game_world.add_collision_pair('sword:monster', None, slime)
     game_world.add_objects(slimes, 1)
 
 def update():

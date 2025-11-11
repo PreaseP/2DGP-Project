@@ -53,5 +53,8 @@ class SwordEffect:
         if self.frame >= FRAMES_PER_ATTACK:
             game_world.remove_object(self)
 
+    def handle_collision(self, group, other):
+        pass
+
 
 
