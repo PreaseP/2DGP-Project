@@ -86,6 +86,6 @@ class Slime:
         pass
 
     def handle_collision(self, group, other):
-        if group == 'sword:monster':
+        if group == 'sword:monster' and other.frame < 1.0:
             game_world.remove_object(self)
 
