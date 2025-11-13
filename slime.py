@@ -41,7 +41,7 @@ class Slime:
             self.ydir = random.choice([-1, 1])
         self.move_timer = 0.0
         self.hp = 40
-        self.font = load_font('resources/DungGeunMo.TTF', 20)
+        self.font = load_font('resources/DungGeunMo.TTF', 30)
 
         self.damage_timer = 0.0
         self.damage_amount = 0
@@ -101,7 +101,7 @@ class Slime:
                                        0, ' ', self.x, self.y, 75, 75)
 
         if self.damage_timer > 0.0 and self.damage_amount:
-            self.font.draw(self.x + 40, self.y + 40, f'{self.damage_amount}', (255, 0, 0))
+            self.font.draw(self.x + 20, self.y + 20 + int(80 * (0.7 - self.damage_timer)), f'{self.damage_amount}', (255, 0, 0))
 
         draw_rectangle(*self.get_bb())
 
