@@ -28,24 +28,39 @@ slime_size = (26, 28)
 class Slime:
     image = None
 
-    def __init__(self):
-        self.x, self.y = random.randint(0 + 100, 1280 - 100), random.randint(0 + 70, 720 - 70)
+    def __init__(self, sx = 0, sy = 0):
+        self.t = 1.0
+
+        if sx == 0 and sy == 0:
+            self.x, self.y = random.randint(0 + 100, 1280 - 100), random.randint(0 + 70, 720 - 70)
+        else:
+            self.x, self.y = sx, sy
+            self.sx, self.sy = sx, sy
+            self.dis = math.sqrt((640 - self.x) ** 2 + (360 - self.y) ** 2)
+            self.t = 0.0
+
         if Slime.image == None:
             Slime.image = load_image("resources/sprites/farming_slimes.png")
+
         self.frame = random.randint(0, 3)
         self.type = random.randint(0, 2)
-        self.dir = random.choice([-1,1])
+
+        if self.x < 0:
+            self.dir = 1
+        elif self.x > 1280:
+            self.dir = -1
+        else:
+            self.dir = random.choice([-1,1])
+
         self.xdir = self.ydir = 0
+
         if random.randint(0, 10) < 5:
             self.xdir = self.dir
         else:
             self.ydir = random.choice([-1, 1])
+
         self.move_timer = 0.0
         self.hp = 40
-        self.font = load_font('resources/DungGeunMo.TTF', 30)
-
-        self.damage_timer = 0.0
-        self.damage_amount = 0
 
         self.protect_timer = 0.0
         self.protect = False
@@ -55,9 +70,27 @@ class Slime:
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
-        self.x += self.xdir * RUN_SPEED_PPS * game_framework.frame_time
-        self.y += self.ydir * RUN_SPEED_PPS * game_framework.frame_time
-        self.move_timer += game_framework.frame_time
+
+        if self.t < 1.0:
+            if 0 + 100 < self.x < 1280 - 100 and 0 + 100 < self.y < 720 - 100:
+                self.t = 1.0
+            else:
+                self.t += game_framework.frame_time * RUN_SPEED_PPS / self.dis
+                self.x = (1 - self.t) * self.sx + self.t * 640
+                self.y = (1 - self.t) * self.sy + self.t * 360
+
+        else:
+            self.x += self.xdir * RUN_SPEED_PPS * game_framework.frame_time
+            self.y += self.ydir * RUN_SPEED_PPS * game_framework.frame_time
+            self.move_timer += game_framework.frame_time
+            if self.xdir:
+                if self.x < 0 + 50 or self.x > 1280 - 50:
+                    self.xdir *= -1
+                    self.dir *= -1
+            if self.ydir:
+                if self.y < 0 + 50 or self.y > 720 - 50:
+                    self.ydir *= -1
+
         if self.move_timer >= 2.0:
             if self.xdir or self.ydir:
                 self.xdir = self.ydir = 0
@@ -69,14 +102,6 @@ class Slime:
                 else:
                     self.ydir = random.choice([-1,1])
                     self.move_timer = 0.0
-
-        if self.xdir:
-            if self.x < 0 + 50 or self.x > 1280 - 50:
-                self.xdir *= -1
-                self.dir *= -1
-        if self.ydir:
-            if self.y < 0 + 50 or self.y > 720 - 50:
-                self.ydir *= -1
 
         if self.protect_timer > 0.0:
             self.protect_timer -= game_framework.frame_time
