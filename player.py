@@ -141,6 +141,7 @@ class Attack:
               self.player.frame = 0
               effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir)
               game_world.add_object(effect, 1)
+              game_world.add_collision_pair('sword:monster', effect, None)
             elif self.player.xdir == 0 and self.player.ydir == 0:
                 self.player.state_machine.cur_state = self.player.IDLE
             else:
