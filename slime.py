@@ -2,6 +2,7 @@ import random
 import math
 import game_framework
 import game_world
+from damage_font import DamageFont
 
 from pico2d import *
 
@@ -77,12 +78,6 @@ class Slime:
             if self.y < 0 + 50 or self.y > 720 - 50:
                 self.ydir *= -1
 
-        if self.damage_timer > 0.0:
-            self.damage_timer -= game_framework.frame_time
-            if self.damage_timer < 0.0:
-                self.damage_timer = 0.0
-                self.damage_amount = 0
-
         if self.protect_timer > 0.0:
             self.protect_timer -= game_framework.frame_time
             if self.protect_timer < 0.0:
@@ -100,9 +95,6 @@ class Slime:
             Slime.image.clip_composite_draw(sprite_x, sprite_y, slime_size[0], slime_size[1],
                                        0, ' ', self.x, self.y, 75, 75)
 
-        if self.damage_timer > 0.0 and self.damage_amount:
-            self.font.draw(self.x + 20, self.y + 20 + int(80 * (0.7 - self.damage_timer)), f'{self.damage_amount}', (255, 0, 0))
-
         draw_rectangle(*self.get_bb())
 
     def handle_event(self, event):
@@ -111,8 +103,8 @@ class Slime:
     def handle_collision(self, group, other):
         if group == 'sword:monster' and self.protect == False and other.frame < 1.0:
             self.hp -= other.atk
-            self.damage_amount = other.atk
-            self.damage_timer = 0.6
+            print_damage = DamageFont(*self.get_bb(), other.atk)
+            game_world.add_object(print_damage, 3)
             self.protect = True
             self.protect_timer = 0.6
             if self.hp <= 0:
