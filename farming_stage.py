@@ -25,7 +25,7 @@ def init():
     map = load_image('resources/background/farming.png')
 
     global spawn_timer
-    spawn_timer = 0.0
+    spawn_timer = 5.0
 
     global player
     player = Player()
