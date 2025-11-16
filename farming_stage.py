@@ -1,6 +1,7 @@
 import random
 from pico2d import *
 
+import cockpit_mode
 from players import PlayerS
 from slime import Slime
 import game_framework
@@ -16,7 +17,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.quit()
+            game_framework.change_mode(cockpit_mode)
         else:
             player.handle_event(event)
 
