@@ -1,6 +1,6 @@
 # python
 import math
-from pico2d import draw_rectangle
+from pico2d import *
 import game_world
 import game_framework
 
@@ -8,7 +8,11 @@ SCREEN_W = 1280
 SCREEN_H = 720
 
 class Bullet:
+    image = None
+
     def __init__(self, x, y, target_x, target_y, speed= 500):
+        if Bullet.image == None:
+            Bullet.image = load_image('resources/sprites/bullet.png')
         self.x = x
         self.y = y
         dx = target_x - x
@@ -36,7 +40,8 @@ class Bullet:
                 pass
 
     def draw(self):
-        # 간단 표시: 바운딩 박스 (원하면 이미지로 교체)
+        self.image.draw(self.x, self.y, 25, 25)
+
         draw_rectangle(self.x - self.w/2, self.y - self.h/2,
                        self.x + self.w/2, self.y + self.h/2)
 
