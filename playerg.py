@@ -43,8 +43,6 @@ FRAMES_PER_ACTION = 8
 
 # Player attack Action Speed
 TIME_PER_ATTACK = 0.5
-ATTACK_PER_TIME = 1.0 / TIME_PER_ATTACK
-FRAMES_PER_ATTACK = 7
 
 class Idle:
 
@@ -63,15 +61,15 @@ class Idle:
 
     def draw(self):
         if self.player.face_dir == 1: # right
-            self.player.image.clip_composite_draw(0, 35, 33, 22,
+            self.player.image.clip_composite_draw(0, 41, 17, 50,
                                             0, ' ', self.player.x, self.player.y, 75, 75)
         else: # face_dir == -1: # left
-            self.player.image.clip_composite_draw(0, 35, 33, 22,
+            self.player.image.clip_composite_draw(0, 41, 17, 50,
                                                   0, 'h', self.player.x, self.player.y, 75, 75)
 
 run_sprites = [
-    (0, 0), (32, 0), (64, 0), (96, 0),
-    (128, 0), (160, 0), (192, 0), (224, 0)
+    (6, 0), (40, 0), (75, 0), (110, 0),
+    (143, 0), (178, 0), (210, 0), (245, 0)
 ]
 
 class Run:
@@ -88,6 +86,7 @@ class Run:
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        # self.player.frame = 7
         self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time
         self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
 
@@ -97,18 +96,18 @@ class Run:
     def draw(self):
         if self.player.xdir == 0:
             if self.player.face_dir == 1:  # right
-                self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
+                self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 20, 22,
                                                       0, ' ', self.player.x, self.player.y, 75, 75)
             else:  # face_dir == -1: # left
-                self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
+                self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 20, 22,
                                                       0, 'h', self.player.x, self.player.y, 75, 75)
         elif self.player.xdir == 1:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
-                                                  run_sprites[int(self.player.frame)][1], 31, 22,
+                                                  run_sprites[int(self.player.frame)][1], 20, 22,
                                                   0, ' ', self.player.x, self.player.y, 75, 75)
         else:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
-                                                  run_sprites[int(self.player.frame)][1], 31, 22,
+                                                  run_sprites[int(self.player.frame)][1], 20, 22,
                                                   0, 'h', self.player.x, self.player.y, 75, 75)
 
 class PlayerG:
