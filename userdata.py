@@ -24,3 +24,7 @@ def spend_gold(gold):
         return True
     else:
         return False
+
+gunAtk = [10, 20, 40, 80]
+
+swordAtk = [10, 20, 40, 80]
