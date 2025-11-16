@@ -1,0 +1,48 @@
+# python
+import math
+from pico2d import draw_rectangle
+import game_world
+import game_framework
+
+SCREEN_W = 1280
+SCREEN_H = 720
+
+class Bullet:
+    def __init__(self, x, y, target_x, target_y, speed= 500):
+        self.x = x
+        self.y = y
+        dx = target_x - x
+        dy = target_y - y
+        dist = math.hypot(dx, dy)
+        if dist == 0:
+            self.vx, self.vy = 0, 0
+        else:
+            self.vx = dx / dist * speed
+            self.vy = dy / dist * speed
+        self.w = 25
+        self.h = 25
+        self.to_remove = False
+
+    def update(self):
+        dt = game_framework.frame_time
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+
+        # 화면 밖으로 나가면 삭제
+        if self.x < -50 or self.x > SCREEN_W + 50 or self.y < -50 or self.y > SCREEN_H + 50:
+            try:
+                game_world.remove_object(self)
+            except Exception:
+                pass
+
+    def draw(self):
+        # 간단 표시: 바운딩 박스 (원하면 이미지로 교체)
+        draw_rectangle(self.x - self.w/2, self.y - self.h/2,
+                       self.x + self.w/2, self.y + self.h/2)
+
+    def get_bb(self):
+        return self.x - self.w/2, self.y - self.h/2, self.x + self.w/2, self.y + self.h/2
+
+    def handle_collision(self, group, other):
+        # 충돌 처리 필요시 구현
+        pass

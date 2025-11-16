@@ -1,13 +1,13 @@
 from pico2d import load_image, get_time, load_font, draw_rectangle
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
+    SDL_MOUSEMOTION
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
 import game_framework
+from bullet import Bullet
 
 from state_machine import StateMachine
-from sword_effect import SwordEffect
-
 
 def space_down(e): # e is space down ?
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
@@ -41,9 +41,6 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
 
-# Player attack Action Speed
-TIME_PER_ATTACK = 0.5
-
 class Idle:
 
     def __init__(self, player):
@@ -55,9 +52,9 @@ class Idle:
 
     def exit(self, e):
         pass
+
     def do(self):
-        if self.player.attacking:
-            pass
+        pass
 
     def draw(self):
         if self.player.face_dir == 1: # right
@@ -90,9 +87,6 @@ class Run:
         self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time
         self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
 
-        if self.player.attacking:
-            pass
-
     def draw(self):
         if self.player.xdir == 0:
             if self.player.face_dir == 1:  # right
@@ -122,6 +116,13 @@ class PlayerG:
         self.attacking = False
         self.atk = 10
 
+        # 연속 발사 관련
+        self.fire_rate = 2.0  # 초당 발사 수 (원하면 조정)
+        self.fire_interval = 1.0 / self.fire_rate
+        self.fire_cooldown = 0.0
+        self.last_mouse_x = self.x
+        self.last_mouse_y = self.y
+
         self.IDLE = Idle(self)
         self.RUN = Run(self)
         self.state_machine = StateMachine(
@@ -136,9 +137,18 @@ class PlayerG:
 
     def update(self):
         self.state_machine.update()
+        # 발사 쿨타임 감소 및 연속 발사 처리
+        dt = game_framework.frame_time
+        if self.fire_cooldown > 0:
+            self.fire_cooldown -= dt
+        if self.attacking and self.fire_cooldown <= 0:
+            # 마우스 좌표는 이미 pico2d 좌표로 변환되어 있어야 함
+            b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y)
+            game_world.add_object(b, 1)
+            self.fire_cooldown = self.fire_interval
 
     def handle_event(self, event):
-        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP):
+        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_MOUSEMOTION):
             cur_xdir, cur_ydir = self.xdir, self.ydir
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_a:
@@ -158,10 +168,17 @@ class PlayerG:
                     self.ydir -= 1
                 elif event.key == SDLK_s:
                     self.ydir += 1
+            elif event.type == SDL_MOUSEMOTION:
+                self.last_mouse_x = event.x
+                self.last_mouse_y = 720 - event.y
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
+                # 좌표 변환 (SDL 위쪽 원점 -> pico2d 아래 원점)
+                self.last_mouse_x = event.x
+                self.last_mouse_y = 720 - event.y
                 self.attacking = True
             elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
+
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
