@@ -45,18 +45,20 @@ def draw():
     clear_canvas()
     image.draw(640, 360, 1280, 720)
 
-    # 버튼 그리기 (테두리 + 텍스트)
+    # 버튼 그리기 (채워진 사각형 + 텍스트)
     left = FARMING_CENTER_X - FARMING_W // 2
     right = FARMING_CENTER_X + FARMING_W // 2
     bottom = FARMING_CENTER_Y - FARMING_H // 2
     top = FARMING_CENTER_Y + FARMING_H // 2
 
-    # 버튼 테두리
-    draw_rectangle(left, bottom, right, top)
+    # 채워진 사각형: draw_rectangle을 여러 번 그려 채움 효과를 냄
+    # 버튼 영역의 각 y에 대해 1픽셀 높이의 가로선을 그림
+    y = bottom
+    while y <= top:
+        draw_rectangle(left, y, right, y+1, 255, 255, 255 ,0)
+        y += 1
 
-    # 버튼 라벨 (중앙 정렬 수동)
-    text = 'Farming Stage'
-    font.draw(FARMING_CENTER_X - 160, FARMING_CENTER_Y, text, (255, 255, 255))
+    font.draw(FARMING_CENTER_X - 160, FARMING_CENTER_Y, 'Farming Stage', (0, 0, 0))
 
     update_canvas()
 
@@ -67,4 +69,3 @@ def finish():
 
 def pause(): pass
 def resume(): pass
-
