@@ -166,7 +166,7 @@ class Attack:
                                                    attack_sprites[int(self.player.frame)][2], 31, 0, 'h',
                                                    self.player.x - 5, self.player.y + 15, 100, 100)
 
-class Player:
+class PlayerS:
     def __init__(self):
 
         self.x, self.y = 640, 360

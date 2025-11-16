@@ -1,7 +1,7 @@
 import random
 from pico2d import *
 
-from player import Player
+from players import PlayerS
 from slime import Slime
 import game_framework
 import game_world
@@ -28,7 +28,7 @@ def init():
     spawn_timer = 5.0
 
     global player
-    player = Player()
+    player = PlayerS()
     player.xdir = -1
     game_world.add_object(player, 1)
 
