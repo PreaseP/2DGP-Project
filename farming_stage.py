@@ -7,6 +7,7 @@ from playerg import PlayerG
 from slime import Slime
 import game_framework
 import game_world
+import userdata
 
 spawn_timer = 0.0
 
@@ -30,7 +31,11 @@ def init():
     spawn_timer = 5.0
 
     global player
-    player = PlayerG()
+
+    if userdata.playerType == 'S':
+        player = PlayerS()
+    else:
+        player = PlayerG()
     game_world.add_object(player, 1)
 
     slimes = [Slime() for _ in range(10)]
@@ -49,7 +54,7 @@ def update():
                      for _ in range (5)]
         game_world.add_objects(new_slime, 1)
         for slime in new_slime:
-            game_world.add_collision_pair('attack:monster', None, slime)
+            game_world.add_collision_pair('nonBullet:monster', None, slime)
             game_world.add_collision_pair('bullet:monster', None, slime)
         spawn_timer = 0.0
 
@@ -60,6 +65,7 @@ def draw():
     clear_canvas()
     map.draw(640, 360, 1280, 720)
     game_world.render()
+    userdata.show_status()
     update_canvas()
 
 

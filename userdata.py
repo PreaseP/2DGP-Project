@@ -1,3 +1,7 @@
+from pico2d import *
+import game_world
+import game_framework
+
 playerLevel = [1, 0] # [level, exp]
 
 expList = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500] # level up에 필요한 경험치 리스트
@@ -9,7 +13,7 @@ def add_exp(exp):
         playerLevel[1] -= expList[playerLevel[0]]
         playerLevel[0] += 1
 
-playerType = 'G' # 'S' or 'G'
+playerType = 'S' # 'S' or 'G'
 
 playerGold = 0
 
@@ -28,3 +32,10 @@ def spend_gold(gold):
 gunAtk = [10, 20, 40, 80]
 
 swordAtk = [10, 20, 40, 80]
+
+def show_status():
+    global font
+    font = load_font('resources/DungGeunMo.TTF', 20)
+
+    font.draw(10, 700, f"Level: {playerLevel[0]}, EXP: {playerLevel[1]}/{expList[playerLevel[0]]}", (255, 0, 0))
+    font.draw(10, 670, f"Account: {playerGold}", (255, 215, 0))

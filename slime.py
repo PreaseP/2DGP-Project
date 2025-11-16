@@ -1,5 +1,6 @@
 import random
 import math
+import userdata
 import game_framework
 import game_world
 from damage_font import DamageFont
@@ -134,4 +135,6 @@ class Slime:
             self.protect_timer = 0.6
             if self.hp <= 0:
                 game_world.remove_object(self)
+                userdata.add_exp(50)
+                userdata.add_gold(10)
 
