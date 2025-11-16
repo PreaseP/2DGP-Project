@@ -126,7 +126,7 @@ class Slime:
         pass
 
     def handle_collision(self, group, other):
-        if group == 'sword:monster' and self.protect == False and other.frame < 1.0:
+        if (group == 'nonBullet:monster' and self.protect == False and other.frame < 1.0) or (group == 'bullet:monster' and self.protect == False):
             self.hp -= other.atk
             print_damage = DamageFont(*self.get_bb(), other.atk)
             game_world.add_object(print_damage, 3)

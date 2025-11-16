@@ -117,7 +117,7 @@ class PlayerG:
         self.atk = 10
 
         # 연속 발사 관련
-        self.fire_rate = 2.0  # 초당 발사 수 (원하면 조정)
+        self.fire_rate = 1.5  # 초당 발사 수 (원하면 조정)
         self.fire_interval = 1.0 / self.fire_rate
         self.fire_cooldown = 0.0
         self.last_mouse_x = self.x
@@ -143,8 +143,9 @@ class PlayerG:
             self.fire_cooldown -= dt
         if self.attacking and self.fire_cooldown <= 0:
             # 마우스 좌표는 이미 pico2d 좌표로 변환되어 있어야 함
-            b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y)
+            b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y, atk=self.atk)
             game_world.add_object(b, 1)
+            game_world.add_collision_pair('bullet:monster', b, None)
             self.fire_cooldown = self.fire_interval
 
     def handle_event(self, event):

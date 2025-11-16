@@ -3,6 +3,7 @@ from pico2d import *
 
 import cockpit_mode
 from players import PlayerS
+from playerg import PlayerG
 from slime import Slime
 import game_framework
 import game_world
@@ -29,13 +30,13 @@ def init():
     spawn_timer = 5.0
 
     global player
-    player = PlayerS()
-    player.xdir = -1
+    player = PlayerG()
     game_world.add_object(player, 1)
 
     slimes = [Slime() for _ in range(10)]
     for slime in slimes:
-        game_world.add_collision_pair('sword:monster', None, slime)
+        game_world.add_collision_pair('nonBullet:monster', None, slime)
+        game_world.add_collision_pair('bullet:monster', None, slime)
     game_world.add_objects(slimes, 1)
 
 def update():
@@ -48,7 +49,8 @@ def update():
                      for _ in range (5)]
         game_world.add_objects(new_slime, 1)
         for slime in new_slime:
-            game_world.add_collision_pair('sword:monster', None, slime)
+            game_world.add_collision_pair('attack:monster', None, slime)
+            game_world.add_collision_pair('bullet:monster', None, slime)
         spawn_timer = 0.0
 
     game_world.update()

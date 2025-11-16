@@ -10,11 +10,12 @@ SCREEN_H = 720
 class Bullet:
     image = None
 
-    def __init__(self, x, y, target_x, target_y, speed= 500):
+    def __init__(self, x, y, target_x, target_y, speed = 500, atk = 10):
         if Bullet.image == None:
             Bullet.image = load_image('resources/sprites/bullet.png')
         self.x = x
         self.y = y
+        self.atk = atk
         dx = target_x - x
         dy = target_y - y
         dist = math.hypot(dx, dy)
@@ -49,5 +50,6 @@ class Bullet:
         return self.x - self.w/2, self.y - self.h/2, self.x + self.w/2, self.y + self.h/2
 
     def handle_collision(self, group, other):
-        # 충돌 처리 필요시 구현
-        pass
+        if group == 'bullet:monster':
+            game_world.remove_object(self)
+

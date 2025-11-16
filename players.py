@@ -121,7 +121,7 @@ class Attack:
         self.player.frame = 0  # 공격 프레임 초기화
         effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk)
         game_world.add_object(effect, 1)
-        game_world.add_collision_pair('sword:monster', effect, None)
+        game_world.add_collision_pair('nonBullet:monster', effect, None)
 
     def exit(self, e):
         pass
@@ -139,9 +139,9 @@ class Attack:
         if self.player.frame >= FRAMES_PER_ATTACK:
             if self.player.attacking:
               self.player.frame = 0
-              effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir)
+              effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk)
               game_world.add_object(effect, 1)
-              game_world.add_collision_pair('sword:monster', effect, None)
+              game_world.add_collision_pair('nonBullet:monster', effect, None)
             elif self.player.xdir == 0 and self.player.ydir == 0:
                 self.player.state_machine.cur_state = self.player.IDLE
             else:
