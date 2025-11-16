@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, load_font, draw_rectangle
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
@@ -56,11 +56,10 @@ class Idle:
             self.player.face_dir = e[1]  # 이전 방향 유지
 
     def exit(self, e):
+        pass
+    def do(self):
         if self.player.attacking:
             pass
-
-    def do(self):
-        pass
 
     def draw(self):
         if self.player.face_dir == 1: # right
@@ -85,13 +84,15 @@ class Run:
             self.player.face_dir = self.player.xdir
 
     def exit(self, e):
-        if self.player.attacking:
-            pass
+        pass
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time
         self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
+
+        if self.player.attacking:
+            pass
 
     def draw(self):
         if self.player.xdir == 0:
@@ -158,9 +159,9 @@ class PlayerG:
                     self.ydir -= 1
                 elif event.key == SDLK_s:
                     self.ydir += 1
-            elif event.type == SDL_MOUSEBUTTONDOWN:
+            elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
                 self.attacking = True
-            elif event.type == SDL_MOUSEBUTTONUP:
+            elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면

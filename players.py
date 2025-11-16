@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, load_font, draw_rectangle
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
@@ -219,10 +219,10 @@ class PlayerS:
                     self.ydir -= 1
                 elif event.key == SDLK_s:
                     self.ydir += 1
-            elif event.type == SDL_MOUSEBUTTONDOWN:
+            elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
                 self.attacking = True
                 self.state_machine.handle_state_event(('ATTACK', event))
-            elif event.type == SDL_MOUSEBUTTONUP:
+            elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
                 self.state_machine.handle_state_event(('INPUT', event))
 
