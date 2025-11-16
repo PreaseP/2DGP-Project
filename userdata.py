@@ -39,3 +39,27 @@ def show_status():
 
     font.draw(10, 700, f"Level: {playerLevel[0]}, EXP: {playerLevel[1]}/{expList[playerLevel[0]]}", (255, 0, 0))
     font.draw(10, 670, f"Account: {playerGold}", (255, 215, 0))
+
+# userdata를 json으로 저장
+
+def save_userdata():
+    import json
+    data = {
+        'playerLevel': playerLevel,
+        'playerType': playerType,
+        'playerGold': playerGold
+    }
+    with open('userdata.json', 'w') as f:
+        json.dump(data, f)
+
+def load_userdata():
+    import json
+    global playerLevel, playerType, playerGold
+    try:
+        with open('userdata.json', 'r') as f:
+            data = json.load(f)
+            playerLevel = data['playerLevel']
+            playerType = data['playerType']
+            playerGold = data['playerGold']
+    except FileNotFoundError:
+        pass
