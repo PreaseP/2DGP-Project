@@ -108,64 +108,6 @@ class Run:
                                                   run_sprites[int(self.player.frame)][1], 31, 22,
                                                   0, 'h', self.player.x, self.player.y, 75, 75)
 
-attack_sprites = [
-    (0, 0, 62), (63, 0, 62), (126, 0, 62), (189, 0, 62),
-    (252, 0, 62), (315, 0, 62), (378, 0, 62)
-]
-
-class Attack:
-    def __init__(self, player):
-        self.player = player
-
-    def enter(self, e):
-        self.player.frame = 0  # 공격 프레임 초기화
-        effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk)
-        game_world.add_object(effect, 1)
-        game_world.add_collision_pair('sword:monster', effect, None)
-
-    def exit(self, e):
-        pass
-
-    def do(self):
-        # 공격 애니메이션 프레임 업데이트
-        self.player.frame = (self.player.frame + FRAMES_PER_ATTACK * ATTACK_PER_TIME * game_framework.frame_time)
-        self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time
-        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
-        # 공격 애니메이션이 끝나면 상태 전환
-
-        if self.player.xdir != 0:
-            self.player.face_dir = self.player.xdir
-
-        if self.player.frame >= FRAMES_PER_ATTACK:
-            if self.player.attacking:
-              self.player.frame = 0
-              effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir)
-              game_world.add_object(effect, 1)
-              game_world.add_collision_pair('sword:monster', effect, None)
-            elif self.player.xdir == 0 and self.player.ydir == 0:
-                self.player.state_machine.cur_state = self.player.IDLE
-            else:
-                self.player.state_machine.cur_state = self.player.RUN
-
-    def draw(self):
-        if self.player.xdir == 0:
-            if self.player.face_dir == 1:  # right
-                self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
-                                                       attack_sprites[int(self.player.frame)][2], 31, 0, ' ', self.player.x - 5, self.player.y + 15, 100, 100)
-            else:  # face_dir == -1: # left
-                self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
-                                                       attack_sprites[int(self.player.frame)][2], 31, 0, 'h', self.player.x - 5, self.player.y + 15, 100, 100)
-        elif self.player.xdir == 1:
-            self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0],
-                                                   attack_sprites[int(self.player.frame)][1],
-                                                   attack_sprites[int(self.player.frame)][2], 31, 0, ' ',
-                                                   self.player.x - 5, self.player.y + 15, 100, 100)
-        else:
-            self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0],
-                                                   attack_sprites[int(self.player.frame)][1],
-                                                   attack_sprites[int(self.player.frame)][2], 31, 0, 'h',
-                                                   self.player.x - 5, self.player.y + 15, 100, 100)
-
 class PlayerG:
     def __init__(self):
 
@@ -181,17 +123,13 @@ class PlayerG:
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
-        self.ATTACK = Attack(self)  # Attack 상태 인스턴스 생성
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
-                self.IDLE: {event_run: self.RUN,
-                            event_attack: self.ATTACK},
+                self.IDLE: {event_run: self.RUN},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
-                self.RUN: {event_stop: self.IDLE,
-                           event_attack: self.ATTACK},
-                self.ATTACK: {}
+                self.RUN: {event_stop: self.IDLE}
             }
         )
 
