@@ -11,6 +11,9 @@
 - https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/487315
 (Risk of Rain Returns, Commando)
 
+총알
+- https://www.reddit.com/r/godot/comments/1gqvpmv/pixel_bullet
+
 보스 몬스터
 - https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/488069
 (Risk of Rain Returns, Black Imp) 
