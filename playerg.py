@@ -56,7 +56,8 @@ class Idle:
             self.player.face_dir = e[1]  # 이전 방향 유지
 
     def exit(self, e):
-        pass
+        if self.player.attacking:
+            pass
 
     def do(self):
         pass
@@ -84,7 +85,8 @@ class Run:
             self.player.face_dir = self.player.xdir
 
     def exit(self, e):
-        pass
+        if self.player.attacking:
+            pass
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
@@ -116,8 +118,7 @@ class PlayerG:
         self.face_dir = 1
         self.xdir = 0
         self.ydir = 0
-        self.image = load_image('resources/sprites/sword_move.png')
-        self.attack = load_image('resources/sprites/sword_attack.png')
+        self.image = load_image('resources/sprites/gun_move.png')
         self.attacking = False
         self.atk = 10
 
@@ -159,10 +160,8 @@ class PlayerG:
                     self.ydir += 1
             elif event.type == SDL_MOUSEBUTTONDOWN:
                 self.attacking = True
-                self.state_machine.handle_state_event(('ATTACK', event))
             elif event.type == SDL_MOUSEBUTTONUP:
                 self.attacking = False
-                self.state_machine.handle_state_event(('INPUT', event))
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
