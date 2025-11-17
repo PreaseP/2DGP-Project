@@ -11,7 +11,7 @@ maxHealth = 3 + playerSkill['general'][1] * 1
 
 maxSkillLevel = {'general' : (5,5,5), 'sword' : (3, 2), 'gun' : (3, 2)}
 
-weaponPercent = [(60, 35, 5), (20, 65, 15), (10, 25, 65)] # 무기 연성 확률 리스트
+weaponPercent = [(60, 35, 5), (20, 65, 15), (15, 45, 40), (5, 20, 75)] # 무기 연성 확률 리스트
 
 playerWeapon = {'sword' : [0,0], 'gun' : [0,0]} # [검 등급, 강화 정도] / [총 등급, 강화 정도]
 
@@ -34,8 +34,9 @@ def make_weapon(weapon_type):
     else:
         grade = 2
 
-    if playerWeapon[weapon_type][0] <= grade:
+    if playerWeapon[weapon_type][0] < grade:
         playerWeapon[weapon_type][0] = grade
+        playerWeapon[weapon_type][1] = 0
 
 def upgrade_weapon(weapon_type):
     global playerWeapon
@@ -84,7 +85,10 @@ def show_status(health = 3):
     global font
     font = load_font('resources/DungGeunMo.TTF', 20)
 
-    font.draw(10, 700, f"Level: {playerLevel[0]}, EXP: {playerLevel[1]}/{expList[playerLevel[0]]}", (255, 0, 0))
+    if playerLevel[0] >= len(expList):
+        font.draw(10, 700, f"Level: {playerLevel[0]}, EXP: MAX", (255, 0, 0))
+    else:
+        font.draw(10, 700, f"Level: {playerLevel[0]}, EXP: {playerLevel[1]}/{expList[playerLevel[0]]}", (255, 0, 0))
     font.draw(10, 670, f"Account: {playerGold}", (255, 215, 0))
     font.draw(10, 640, f"Health: {health}/{maxHealth}", (0, 255, 0))
 
