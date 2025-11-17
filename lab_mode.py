@@ -12,6 +12,9 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_DOWN:
             game_framework.change_mode(cockpit_mode)
+        elif event.type == SDL_MOUSEWHEEL:
+            if event.y < 0:
+                game_framework.change_mode(cockpit_mode)
 
 def init():
     global image, popup, font

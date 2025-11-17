@@ -45,6 +45,11 @@ def handle_events():
                             userdata.playerType = 'G'
                         else:
                             userdata.playerType = 'S'
+        elif event.type == SDL_MOUSEWHEEL:
+            if event.y >0:
+                game_framework.change_mode(lab_mode)
+            else:
+                game_framework.change_mode(armory_mode)
 
 def init():
     global image, font, sword, gun
@@ -59,13 +64,7 @@ def update():
 def draw():
     clear_canvas()
     image.draw(640, 360, 1280, 720)
-
-    # 채워진 사각형: draw_rectangle을 여러 번 그려 채움 효과를 냄
-    # 버튼 영역의 각 y에 대해 1픽셀 높이의 가로선을 그림
-    y = buttonList[0].bottom
-    while y <= buttonList[0].top:
-        draw_rectangle(buttonList[0].left, y, buttonList[0].right, y+1, 255, 255, 255 ,0)
-        y += 1
+    buttonList[0].fill_draw()
 
     font.draw(FARMING_CENTER_X - 160, FARMING_CENTER_Y, 'Farming Stage', (0, 0, 0))
     if userdata.playerType == 'S':

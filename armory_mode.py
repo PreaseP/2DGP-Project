@@ -51,7 +51,9 @@ def handle_events():
                     elif button.button_type == 'upgrade_sword':
                         if userdata.playerWeapon['sword'][1] < 5 and userdata.spend_gold(userdata.upgradeCost[userdata.playerWeapon['sword'][1]]):
                             userdata.upgrade_weapon('sword')
-
+        elif event.type == SDL_MOUSEWHEEL:
+            if event.y >0:
+                game_framework.change_mode(cockpit_mode)
 
 
 def init():
