@@ -5,6 +5,7 @@ from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
 import game_framework
+import userdata
 from bullet import Bullet
 
 from state_machine import StateMachine
@@ -31,7 +32,7 @@ def event_attack(e):
 
 # Player Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_KMPH = 20.0 * (userdata.playerSkill['general'][2] * 0.1 + 1.0)  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -114,7 +115,10 @@ class PlayerG:
         self.ydir = 0
         self.image = load_image('resources/sprites/gun_move.png')
         self.attacking = False
-        self.atk = 10
+        self.atk = ((userdata.weaponAtk[userdata.playerWeapon['gun'][0]] + userdata.weaponAtk[userdata.playerWeapon['gun'][0]]
+                     * userdata.weaponUp[userdata.playerWeapon['gun'][1]]) *
+                    (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
+        self.hp = userdata.maxHealth
 
         # 연속 발사 관련
         self.fire_rate = 1.5  # 초당 발사 수 (원하면 조정)

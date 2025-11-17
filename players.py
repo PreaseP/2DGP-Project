@@ -4,6 +4,7 @@ from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
 import game_framework
+import userdata
 
 from state_machine import StateMachine
 from sword_effect import SwordEffect
@@ -31,7 +32,7 @@ def event_attack(e):
 
 # Player Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 20.0  # Km / Hour
+RUN_SPEED_KMPH = 20.0 * (userdata.playerSkill['general'][2] * 0.1 + 1.0)  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -177,7 +178,11 @@ class PlayerS:
         self.image = load_image('resources/sprites/sword_move.png')
         self.attack = load_image('resources/sprites/sword_attack.png')
         self.attacking = False
-        self.atk = 10
+        self.atk = ((userdata.weaponAtk[userdata.playerWeapon['sword'][0]] + userdata.weaponAtk[
+            userdata.playerWeapon['sword'][0]]
+                     * userdata.weaponUp[userdata.playerWeapon['sword'][1]]) *
+                    (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
+        self.hp = userdata.maxHealth
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
