@@ -16,8 +16,9 @@ def handle_events():
 
 
 def init():
-    global image, font
+    global image, popup, font
     image = load_image('resources/background/armory.png')
+    popup = load_image('resources/background/ship_popup.png')
     font = load_font('resources/DungGeunMo.TTF', 50)
 
 def update():
@@ -26,7 +27,7 @@ def update():
 def draw():
     clear_canvas()
     image.draw(640, 360, 1280, 720)
-    # font.draw(400, 100, 'Press A to farming', (255, 255, 255))
+    popup.draw(640, 360, 1120, 630)
     update_canvas()
 
 
