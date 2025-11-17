@@ -7,6 +7,8 @@ playerLevel = [1, 0] # [level, exp]
 playerSkill = {'general' : [0,0,0], 'sword' : [0,0], 'gun' : [0,0]}
 # 공격력, 체력, 이동속도 / 검 무기 연성 확률, 검 이동 스킬 / 총 무기 연성 확률, 총 이동 스킬
 
+maxHealth = 3 + playerSkill['general'][1] * 1
+
 maxSkillLevel = {'general' : (5,5,5), 'sword' : (3, 2), 'gun' : (3, 2)}
 
 weaponPercent = [(60, 35, 5), (20, 65, 15), (10, 25, 65)] # 무기 연성 확률 리스트
@@ -74,12 +76,13 @@ gunAtk = [10, 20, 40, 80]
 
 swordAtk = [10, 20, 40, 80]
 
-def show_status():
+def show_status(health = 3):
     global font
     font = load_font('resources/DungGeunMo.TTF', 20)
 
     font.draw(10, 700, f"Level: {playerLevel[0]}, EXP: {playerLevel[1]}/{expList[playerLevel[0]]}", (255, 0, 0))
     font.draw(10, 670, f"Account: {playerGold}", (255, 215, 0))
+    font.draw(10, 640, f"Health: {health}/{maxHealth}", (0, 255, 0))
 
 # userdata를 json으로 저장
 
