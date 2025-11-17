@@ -81,20 +81,24 @@ def save_userdata():
         'playerLevel': playerLevel,
         'playerType': playerType,
         'playerGold': playerGold,
-        'playerSkillPoint': playerSkillPoint
+        'playerSkillPoint': playerSkillPoint,
+        'playerWeapon': playerWeapon,
+        'playerSkill': playerSkill
     }
-    with open('userdata.json', 'w') as f:
+    with open('save.json', 'w') as f:
         json.dump(data, f)
 
 def load_userdata():
     import json
-    global playerLevel, playerType, playerGold, playerSkillPoint
+    global playerLevel, playerType, playerGold, playerSkillPoint, playerWeapon, playerSkill
     try:
-        with open('userdata.json', 'r') as f:
+        with open('save.json', 'r') as f:
             data = json.load(f)
             playerLevel = data['playerLevel']
             playerType = data['playerType']
             playerGold = data['playerGold']
             playerSkillPoint = data['playerSkillPoint']
+            playerWeapon = data['playerWeapon']
+            playerSkill = data['playerSkill']
     except FileNotFoundError:
         pass
