@@ -7,6 +7,8 @@ playerLevel = [1, 0] # [level, exp]
 playerSkill = {'general' : [0,0,0], 'sword' : [0,0], 'gun' : [0,0]}
 # 공격력, 체력, 이동속도 / 검 무기 연성 확률, 검 이동 스킬 / 총 무기 연성 확률, 총 이동 스킬
 
+maxSkillLevel = {'general' : (5,5,5), 'sword' : (3, 2), 'gun' : (3, 2)}
+
 weaponPercent = [(60, 35, 5), (20, 65, 15), (10, 25, 65)] # 무기 연성 확률 리스트
 
 playerWeapon = {'sword' : [0,0], 'gun' : [0,0]} # [검 등급, 강화 정도] / [총 등급, 강화 정도]
@@ -41,6 +43,12 @@ expList = (0, 100, 200, 300, 400, 500, 600, 700, 800, 900,
 playerType = 'S' # 'S' or 'G'
 playerGold = 0
 playerSkillPoint = 0
+
+def add_skill(skill_type, skill_id):
+    global playerSkillPoint
+    if playerSkillPoint > 0 and playerSkill[skill_type][skill_id] < maxSkillLevel[skill_type][skill_id]:
+        playerSkillPoint -= 1
+        playerSkill[skill_type][skill_id] += 1
 
 def add_exp(exp):
     global playerLevel, playerSkillPoint
