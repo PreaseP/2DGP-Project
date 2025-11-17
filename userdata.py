@@ -20,19 +20,18 @@ def make_weapon(weapon_type):
     rand = random.randint(1, 100)
     percent = playerSkill[weapon_type][0]
     if rand <= weaponPercent[percent][0]:
-        grade = 1
+        grade = 0
     elif rand <= weaponPercent[percent][0] + weaponPercent[percent][1]:
-        grade = 2
+        grade = 1
     else:
-        grade = 3
+        grade = 2
 
     if playerWeapon[weapon_type][0] <= grade:
         playerWeapon[weapon_type][0] = grade
 
 def upgrade_weapon(weapon_type):
     global playerWeapon
-    if playerWeapon[weapon_type][1] < 5:
-        playerWeapon[weapon_type][1] += 1
+    playerWeapon[weapon_type][1] += 1
 
 # level up에 필요한 경험치 리스트, 총 25 레벨
 expList = (0, 100, 200, 300, 400, 500, 600, 700, 800, 900,
