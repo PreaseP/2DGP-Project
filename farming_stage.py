@@ -66,7 +66,7 @@ def draw():
     clear_canvas()
     map.draw(640, 360, 1280, 720)
     game_world.render()
-    userdata.show_status()
+    userdata.show_status(player.hp)
     update_canvas()
 
 
