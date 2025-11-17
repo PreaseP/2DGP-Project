@@ -7,6 +7,7 @@ import game_world
 import game_framework
 import userdata
 from bullet import Bullet
+from laser import Laser
 
 from state_machine import StateMachine
 
@@ -18,6 +19,9 @@ def mouse_click(e):
 
 def mouse_release(e):
     return e[0] == 'INPUT' and e[1].type == SDL_MOUSEBUTTONUP
+
+def event_skill2(e):
+    return e[0] == 'SKILL2'
 
 def event_stop(e):
     return e[0] == 'STOP'
@@ -41,6 +45,11 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
+
+# Player Skill2 Action Speed
+TIME_PER_SKILL2 = 0.5
+SKILL2_PER_TIME = 1.0 / TIME_PER_SKILL2
+FRAMES_PER_SKILL2 = 6
 
 class Idle:
 
@@ -105,6 +114,60 @@ class Run:
                                                   run_sprites[int(self.player.frame)][1], 20, 22,
                                                   0, 'h', self.player.x, self.player.y, 75, 75)
 
+skill2_sprites = [
+    (1, 1), (77, 1), (153, 1), (229, 1),
+    (305, 1), (381, 1)
+]
+
+class Skill2:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, e):
+        self.player.frame = 0  # 공격 프레임 초기화
+        laser_atk = self.player.atk
+        if userdata.playerWeapon['gun'][0] == 5:
+            laser_atk *= 2.0  # 스킬2 공격력 증가
+        elif userdata.playerWeapon['gun'][0] >= 2:
+            laser_atk *= 1.5  # 스킬2 공격력 증가
+
+        laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y, atk = laser_atk)
+        game_world.add_object(laser, 1)
+        game_world.add_collision_pair('bullet:monster', laser, None)
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        # 공격 애니메이션 프레임 업데이트
+        self.player.frame = (self.player.frame + FRAMES_PER_SKILL2 * SKILL2_PER_TIME * game_framework.frame_time)
+        # 공격 애니메이션이 끝나면 상태 전환
+
+        if self.player.frame >= FRAMES_PER_SKILL2:
+            if self.player.xdir == 0 and self.player.ydir == 0:
+                self.player.state_machine.cur_state = self.player.IDLE
+            else:
+                self.player.state_machine.cur_state = self.player.RUN
+
+    def draw(self):
+        if self.player.xdir == 0:
+            if self.player.face_dir == 1:  # right
+                self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
+                                                       74, 33, 0, ' ', self.player.x + 12, self.player.y + 15, 100, 100)
+            else:  # face_dir == -1: # left
+                self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
+                                                       74, 33, 0, 'h', self.player.x - 12, self.player.y + 15, 100, 100)
+        elif self.player.xdir == 1:
+            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0],
+                                                   skill2_sprites[int(self.player.frame)][1],
+                                                   74, 33, 0, ' ',
+                                                   self.player.x + 12, self.player.y + 15, 100, 100)
+        else:
+            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0],
+                                                   skill2_sprites[int(self.player.frame)][1],
+                                                   74, 33, 0, 'h',
+                                                   self.player.x - 12, self.player.y + 15, 100, 100)
+
 class PlayerG:
     def __init__(self):
 
@@ -114,6 +177,8 @@ class PlayerG:
         self.xdir = 0
         self.ydir = 0
         self.image = load_image('resources/sprites/gun_move.png')
+        self.skill2_image = load_image('resources/sprites/gun_skill2_set.png')
+        self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.attacking = False
         self.atk = ((userdata.weaponAtk[userdata.playerWeapon['gun'][0]] + userdata.weaponAtk[userdata.playerWeapon['gun'][0]]
                      * userdata.weaponUp[userdata.playerWeapon['gun'][1]]) *
@@ -127,15 +192,19 @@ class PlayerG:
         self.last_mouse_x = self.x
         self.last_mouse_y = self.y
 
+        self.weapon_time = 0.0
+
         self.IDLE = Idle(self)
         self.RUN = Run(self)
+        self.SKILL2 = Skill2(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
-                self.IDLE: {event_run: self.RUN},
+                self.IDLE: {event_run: self.RUN, event_skill2: self.SKILL2},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
-                self.RUN: {event_stop: self.IDLE}
+                self.RUN: {event_stop: self.IDLE, event_skill2: self.SKILL2},
+                self.SKILL2: {}
             }
         )
 
@@ -143,8 +212,16 @@ class PlayerG:
         self.state_machine.update()
         # 발사 쿨타임 감소 및 연속 발사 처리
         dt = game_framework.frame_time
-        if self.fire_cooldown > 0:
+        if self.fire_cooldown > 0.0:
             self.fire_cooldown -= dt
+            if self.fire_cooldown < 0.0:
+                self.fire_cooldown = 0.0
+
+        if self.weapon_time > 0.0:
+            self.weapon_time -= dt
+            if self.weapon_time < 0.0:
+                self.weapon_time = 0.0
+
         if self.attacking and self.fire_cooldown <= 0:
             # 마우스 좌표는 이미 pico2d 좌표로 변환되어 있어야 함
             b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y, atk=self.atk)
@@ -184,8 +261,12 @@ class PlayerG:
             elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-                if userdata.playerWeapon['gun'][0] == 1 and userdata.playerWeapon['gun'][1] >= 2:
+                if userdata.playerWeapon['gun'][0] == 1 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
                     self.skill1()
+                elif userdata.playerWeapon['gun'][0] == 2 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
+                    self.state_machine.handle_state_event(('SKILL2', event))
+                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
+            
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
@@ -197,6 +278,10 @@ class PlayerG:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+        if self.weapon_time > 0.0:
+            self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
+        
+
 
     def skill1(self):
         # 플레이어 기준 상하좌우로 총알 발사
@@ -213,5 +298,8 @@ class PlayerG:
         return self.x - 40, self.y - 40, self.x + 40, self.y + 40
 
     def handle_collision(self, group, other):
+        pass
+
+    def skill2(self):
         pass
 
