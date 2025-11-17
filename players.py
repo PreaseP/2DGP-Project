@@ -184,6 +184,9 @@ class PlayerS:
                     (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
         self.hp = userdata.maxHealth
 
+        self.protect_timer = 0.0
+        self.protect = False
+
         self.IDLE = Idle(self)
         self.RUN = Run(self)
         self.ATTACK = Attack(self)  # Attack 상태 인스턴스 생성
@@ -202,6 +205,12 @@ class PlayerS:
 
     def update(self):
         self.state_machine.update()
+
+        if self.protect_timer > 0.0:
+            self.protect_timer -= game_framework.frame_time
+            if self.protect_timer < 0.0:
+                self.protect_timer = 0.0
+                self.protect = False
 
     def handle_event(self, event):
         if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP):
@@ -246,5 +255,9 @@ class PlayerS:
         return self.x - 40, self.y - 40, self.x + 40, self.y + 40
 
     def handle_collision(self, group, other):
-        pass
+        if group == 'player:monster' and self.protect == False:
+            if self.hp > 0:
+                self.hp -= 1
+            self.protect = True
+            self.protect_timer = 1.5
 

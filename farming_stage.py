@@ -37,12 +37,14 @@ def init():
     else:
         player = PlayerG()
     game_world.add_object(player, 1)
+    game_world.add_collision_pair('player:monster', player, None)
 
     slimes = [Slime(random.choice([random.randint(40, 400), random.randint(800, 1240)]), random.choice([random.randint(20, 200), random.randint(500, 700)]))
                      for _ in range (10)]
     for slime in slimes:
         game_world.add_collision_pair('nonBullet:monster', None, slime)
         game_world.add_collision_pair('bullet:monster', None, slime)
+        game_world.add_collision_pair('player:monster', None, slime)
     game_world.add_objects(slimes, 1)
 
 def update():
@@ -57,6 +59,7 @@ def update():
         for slime in new_slime:
             game_world.add_collision_pair('nonBullet:monster', None, slime)
             game_world.add_collision_pair('bullet:monster', None, slime)
+            game_world.add_collision_pair('player:monster', None, slime)
         spawn_timer = 0.0
 
     game_world.update()

@@ -194,6 +194,9 @@ class PlayerG:
 
         self.weapon_time = 0.0
 
+        self.protect_timer = 0.0
+        self.protect = False
+
         self.IDLE = Idle(self)
         self.RUN = Run(self)
         self.SKILL2 = Skill2(self)
@@ -228,6 +231,12 @@ class PlayerG:
             game_world.add_object(b, 1)
             game_world.add_collision_pair('bullet:monster', b, None)
             self.fire_cooldown = self.fire_interval
+
+        if self.protect_timer > 0.0:
+            self.protect_timer -= game_framework.frame_time
+            if self.protect_timer < 0.0:
+                self.protect_timer = 0.0
+                self.protect = False
 
     def handle_event(self, event):
         if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_MOUSEMOTION):
@@ -298,8 +307,9 @@ class PlayerG:
         return self.x - 40, self.y - 40, self.x + 40, self.y + 40
 
     def handle_collision(self, group, other):
-        pass
-
-    def skill2(self):
-        pass
+        if group == 'player:monster' and self.protect == False:
+            if self.hp > 0:
+                self.hp -= 1
+            self.protect = True
+            self.protect_timer = 1.5
 
