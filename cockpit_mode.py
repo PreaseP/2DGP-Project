@@ -32,6 +32,10 @@ def handle_events():
             game_framework.change_mode(lab_mode)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_DOWN:
             game_framework.change_mode(armory_mode)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_s:
+            userdata.save_userdata()
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_l:
+            userdata.load_userdata()
         # 마우스 버튼 처리
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
             mx = event.x
