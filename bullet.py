@@ -3,6 +3,7 @@ import math
 from pico2d import *
 import game_world
 import game_framework
+import userdata
 
 PIXEL_PER_METER = (1.0 / 0.03)  # 1pixel = 3cm, 1m = 33.33 pixel
 SCREEN_W = 1280
@@ -52,5 +53,8 @@ class Bullet:
 
     def handle_collision(self, group, other):
         if group == 'bullet:monster':
-            game_world.remove_object(self)
+            if userdata.playerWeapon['gun'][0] == 1 and userdata.playerWeapon['gun'][1] == 5:
+                pass
+            else:
+                game_world.remove_object(self)
 

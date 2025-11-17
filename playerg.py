@@ -1,6 +1,6 @@
 from pico2d import load_image, get_time, load_font, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
-    SDL_MOUSEMOTION
+    SDL_MOUSEMOTION, SDL_BUTTON_RIGHT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
@@ -183,7 +183,9 @@ class PlayerG:
                 self.attacking = True
             elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
-
+            elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
+                if userdata.playerWeapon['gun'][0] == 1 and userdata.playerWeapon['gun'][1] >= 2:
+                    self.skill1()
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
@@ -195,6 +197,17 @@ class PlayerG:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+
+    def skill1(self):
+        # 플레이어 기준 상하좌우로 총알 발사
+        directions = [(1280, 0), (-1280, 0), (0, 720), (0, -720)]  # 오른쪽, 왼쪽, 위, 아래
+        for dir_x, dir_y in directions:
+            target_x = self.x + dir_x
+            target_y = self.y + dir_y
+            b = Bullet(self.x, self.y, target_x, target_y, atk=self.atk)
+            game_world.add_object(b, 1)
+            game_world.add_collision_pair('bullet:monster', b, None)
+
 
     def get_bb(self):
         return self.x - 40, self.y - 40, self.x + 40, self.y + 40
