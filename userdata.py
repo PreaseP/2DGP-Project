@@ -11,6 +11,9 @@ weaponPercent = [(60, 35, 5), (20, 65, 15), (10, 25, 65)] # 무기 연성 확률
 
 playerWeapon = {'sword' : [0,0], 'gun' : [0,0]} # [검 등급, 강화 정도] / [총 등급, 강화 정도]
 
+makeCost = 100 # 무기 연성 비용
+upgradeCost = [50, 100, 200, 400, 800] # 무기 강화 비용
+
 def make_weapon(weapon_type):
     import random
     global playerWeapon
@@ -25,6 +28,11 @@ def make_weapon(weapon_type):
 
     if playerWeapon[weapon_type][0] <= grade:
         playerWeapon[weapon_type][0] = grade
+
+def upgrade_weapon(weapon_type):
+    global playerWeapon
+    if playerWeapon[weapon_type][1] < 5:
+        playerWeapon[weapon_type][1] += 1
 
 # level up에 필요한 경험치 리스트, 총 25 레벨
 expList = (0, 100, 200, 300, 400, 500, 600, 700, 800, 900,
