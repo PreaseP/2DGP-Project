@@ -38,7 +38,8 @@ def init():
         player = PlayerG()
     game_world.add_object(player, 1)
 
-    slimes = [Slime() for _ in range(10)]
+    slimes = [Slime(random.choice([random.randint(40, 400), random.randint(800, 1240)]), random.choice([random.randint(20, 200), random.randint(500, 700)]))
+                     for _ in range (10)]
     for slime in slimes:
         game_world.add_collision_pair('nonBullet:monster', None, slime)
         game_world.add_collision_pair('bullet:monster', None, slime)
@@ -70,6 +71,10 @@ def draw():
 
 
 def finish():
+    for layer in game_world.world:
+        for o in layer:
+            # collision_pairs에서 해당 오브젝트 제거
+            game_world.remove_collision_object(o)
     game_world.clear()
 
 def pause(): pass
