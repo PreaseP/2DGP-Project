@@ -4,6 +4,7 @@ import farming_stage
 import game_framework
 import lab_mode
 import armory_mode
+import userdata
 
 # 버튼 위치/크기 (화면 중앙)
 FARMING_CENTER_X = 640
