@@ -4,22 +4,44 @@ import game_framework
 
 playerLevel = [1, 0] # [level, exp]
 
-# level up에 필요한 경험치 리스트, 총 35 레벨
-expList = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900,
+playerSkill = {'general' : [0,0,0], 'sword' : [0,0], 'gun' : [0,0]}
+# 공격력, 체력, 이동속도 / 검 무기 연성 확률, 검 이동 스킬 / 총 무기 연성 확률, 총 이동 스킬
+
+weaponPercent = [(60, 35, 5), (20, 65, 15), (10, 25, 65)] # 무기 연성 확률 리스트
+
+playerWeapon = {'sword' : [0,0], 'gun' : [0,0]} # [검 등급, 강화 정도] / [총 등급, 강화 정도]
+
+def make_weapon(weapon_type):
+    import random
+    global playerWeapon
+    rand = random.randint(1, 100)
+    percent = playerSkill[weapon_type][0]
+    if rand <= weaponPercent[percent][0]:
+        grade = 1
+    elif rand <= weaponPercent[percent][0] + weaponPercent[percent][1]:
+        grade = 2
+    else:
+        grade = 3
+
+    if playerWeapon[weapon_type][0] <= grade:
+        playerWeapon[weapon_type][0] = grade
+
+# level up에 필요한 경험치 리스트, 총 25 레벨
+expList = (0, 100, 200, 300, 400, 500, 600, 700, 800, 900,
            1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800,
-           3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500,
-           8000, 8500, 9000, 9500, 10000, 11000, 12000]
+           3000, 3500, 4000, 4500, 5000)
+
+playerType = 'S' # 'S' or 'G'
+playerGold = 0
+playerSkillPoint = 0
 
 def add_exp(exp):
-    global playerLevel
+    global playerLevel, playerSkillPoint
     playerLevel[1] += exp
     while playerLevel[0] < len(expList) - 1 and playerLevel[1] >= expList[playerLevel[0]]:
         playerLevel[1] -= expList[playerLevel[0]]
         playerLevel[0] += 1
-
-playerType = 'S' # 'S' or 'G'
-
-playerGold = 0
+        playerSkillPoint += 1
 
 def add_gold(gold):
     global playerGold
@@ -51,19 +73,21 @@ def save_userdata():
     data = {
         'playerLevel': playerLevel,
         'playerType': playerType,
-        'playerGold': playerGold
+        'playerGold': playerGold,
+        'playerSkillPoint': playerSkillPoint
     }
     with open('userdata.json', 'w') as f:
         json.dump(data, f)
 
 def load_userdata():
     import json
-    global playerLevel, playerType, playerGold
+    global playerLevel, playerType, playerGold, playerSkillPoint
     try:
         with open('userdata.json', 'r') as f:
             data = json.load(f)
             playerLevel = data['playerLevel']
             playerType = data['playerType']
             playerGold = data['playerGold']
+            playerSkillPoint = data['playerSkillPoint']
     except FileNotFoundError:
         pass
