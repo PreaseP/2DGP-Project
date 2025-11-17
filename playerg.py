@@ -274,7 +274,8 @@ class PlayerG:
                     self.skill1()
                 elif userdata.playerWeapon['gun'][0] == 2 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
                     self.state_machine.handle_state_event(('SKILL2', event))
-                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
+
+                self.weapon_time = 1.0  # 스킬 쿨타임 설정
             
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
