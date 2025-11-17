@@ -5,16 +5,9 @@ import game_framework
 import lab_mode
 import armory_mode
 import userdata
+from button import Button
 
 buttonList = []
-
-class Button:
-    def __init__(self, left, bottom, right, top, button_type):
-        self.left = left
-        self.bottom = bottom
-        self.right = right
-        self.top = top
-        self.button_type = button_type
 
 # 버튼 위치/크기 (화면 중앙)
 farmingButton = Button(640 - 175, 160 - 40, 640 + 175, 160 + 40, 'farming')  # left, bottom, right, top, button_type
