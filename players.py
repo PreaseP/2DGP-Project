@@ -1,5 +1,6 @@
 from pico2d import load_image, get_time, load_font, draw_rectangle
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
+    SDL_BUTTON_RIGHT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
@@ -120,7 +121,12 @@ class Attack:
 
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
-        effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk)
+        if self.player.skill1_cnt > 0:
+            self.player.skill1_cnt -= 1
+            effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk * 1.5)
+        else:
+            effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk)
+
         game_world.add_object(effect, 1)
         game_world.add_collision_pair('nonBullet:monster', effect, None)
 
@@ -140,7 +146,15 @@ class Attack:
         if self.player.frame >= FRAMES_PER_ATTACK:
             if self.player.attacking:
               self.player.frame = 0
-              effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk)
+
+              if self.player.skill1_cnt > 0:
+                  self.player.skill1_cnt -= 1
+                  effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir,
+                                       self.player.xdir, self.player.atk * 1.5)
+              else:
+                  effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir,
+                                       self.player.xdir, self.player.atk)
+
               game_world.add_object(effect, 1)
               game_world.add_collision_pair('nonBullet:monster', effect, None)
             elif self.player.xdir == 0 and self.player.ydir == 0:
@@ -177,6 +191,7 @@ class PlayerS:
         self.ydir = 0
         self.image = load_image('resources/sprites/sword_move.png')
         self.attack = load_image('resources/sprites/sword_attack.png')
+        self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.attacking = False
         self.atk = ((userdata.weaponAtk[userdata.playerWeapon['sword'][0]] + userdata.weaponAtk[
             userdata.playerWeapon['sword'][0]]
@@ -184,6 +199,8 @@ class PlayerS:
                     (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
         self.hp = userdata.maxHealth
 
+        self.weapon_time = 0.0
+        self.skill1_cnt = 0
         self.protect_timer = 0.0
         self.protect = False
 
@@ -205,6 +222,11 @@ class PlayerS:
 
     def update(self):
         self.state_machine.update()
+
+        if self.weapon_time > 0.0:
+            self.weapon_time -= game_framework.frame_time
+            if self.weapon_time < 0.0:
+                self.weapon_time = 0.0
 
         if self.protect_timer > 0.0:
             self.protect_timer -= game_framework.frame_time
@@ -239,6 +261,13 @@ class PlayerS:
             elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
                 self.state_machine.handle_state_event(('INPUT', event))
+            elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
+                if userdata.playerWeapon['sword'][0] == 1 and userdata.playerWeapon['sword'][1] >= 2 and self.weapon_time <= 0.0:
+                    self.skill1()
+                elif userdata.playerWeapon['sword'][0] == 2 and userdata.playerWeapon['sword'][1] >= 2 and self.weapon_time <= 0.0:
+                    pass
+
+                self.weapon_time = 1.0  # 스킬 쿨타임 설정
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
@@ -250,6 +279,8 @@ class PlayerS:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+        if self.weapon_time > 0.0:
+            self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
 
     def get_bb(self):
         return self.x - 40, self.y - 40, self.x + 40, self.y + 40
@@ -260,4 +291,10 @@ class PlayerS:
                 self.hp -= 1
             self.protect = True
             self.protect_timer = 1.5
+
+    def skill1(self):
+        if userdata.playerWeapon['sword'][1] == 5:
+            self.skill1_cnt = 5
+        elif userdata.playerWeapon['sword'][1] >= 2:
+            self.skill1_cnt = 2
 
