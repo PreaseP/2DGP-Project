@@ -69,10 +69,10 @@ class Idle:
     def draw(self):
         if self.player.face_dir == 1: # right
             self.player.image.clip_composite_draw(0, 41, 17, 50,
-                                            0, ' ', self.player.x, self.player.y, 75, 75)
+                                            0, ' ', self.player.x + 15, self.player.y, 75, 75)
         else: # face_dir == -1: # left
             self.player.image.clip_composite_draw(0, 41, 17, 50,
-                                                  0, 'h', self.player.x, self.player.y, 75, 75)
+                                                  0, 'h', self.player.x - 15, self.player.y, 75, 75)
 
 run_sprites = [
     (6, 0), (40, 0), (75, 0), (110, 0),
@@ -155,10 +155,10 @@ class Skill2:
     def draw(self):
         if self.player.face_dir == 1:  # right
             self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
-                                                   74, 33, 0, ' ', self.player.x + 12, self.player.y + 15, 100, 100)
+                                                   74, 33, 0, ' ', self.player.x + 120, self.player.y + 20, 300, 115)
         else:  # face_dir == -1: # left
             self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
-                                                   74, 33, 0, 'h', self.player.x - 12, self.player.y + 15, 100, 100)
+                                                   74, 33, 0, 'h', self.player.x - 120, self.player.y + 20, 300, 115)
 
 
 class PlayerG:
@@ -300,7 +300,7 @@ class PlayerG:
 
 
     def get_bb(self):
-        return self.x - 40, self.y - 40, self.x + 40, self.y + 40
+        return self.x - 30, self.y - 40, self.x + 30, self.y + 40
 
     def handle_collision(self, group, other):
         if group == 'player:monster' and self.protect == False:
