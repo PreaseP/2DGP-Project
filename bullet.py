@@ -39,6 +39,7 @@ class Bullet:
         if self.x < -50 or self.x > SCREEN_W + 50 or self.y < -50 or self.y > SCREEN_H + 50:
             try:
                 game_world.remove_object(self)
+                game_world.remove_collision_object(self)
             except Exception:
                 pass
 
@@ -56,5 +57,11 @@ class Bullet:
             if userdata.playerWeapon['gun'][0] == 1 and userdata.playerWeapon['gun'][1] == 5:
                 pass
             else:
-                game_world.remove_object(self)
+                try:
+                    game_world.remove_object(self)
+                    game_world.remove_collision_object(self)
+                except Exception:
+                    pass
+
+
 
