@@ -66,10 +66,10 @@ class Idle:
     def draw(self):
         if self.player.face_dir == 1: # right
             self.player.image.clip_composite_draw(0, 35, 33, 22,
-                                            0, ' ', self.player.x, self.player.y, 75, 75)
+                                            0, ' ', self.player.x + 15, self.player.y, 75, 75)
         else: # face_dir == -1: # left
             self.player.image.clip_composite_draw(0, 35, 33, 22,
-                                                  0, 'h', self.player.x, self.player.y, 75, 75)
+                                                  0, 'h', self.player.x - 15, self.player.y, 75, 75)
 
 run_sprites = [
     (0, 0), (32, 0), (64, 0), (96, 0),
@@ -99,18 +99,18 @@ class Run:
         if self.player.xdir == 0:
             if self.player.face_dir == 1:  # right
                 self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
-                                                      0, ' ', self.player.x, self.player.y, 75, 75)
+                                                      0, ' ', self.player.x - 15, self.player.y, 75, 75)
             else:  # face_dir == -1: # left
                 self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
-                                                      0, 'h', self.player.x, self.player.y, 75, 75)
+                                                      0, 'h', self.player.x + 15, self.player.y, 75, 75)
         elif self.player.xdir == 1:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
                                                   run_sprites[int(self.player.frame)][1], 31, 22,
-                                                  0, ' ', self.player.x, self.player.y, 75, 75)
+                                                  0, ' ', self.player.x - 15, self.player.y, 75, 75)
         else:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
                                                   run_sprites[int(self.player.frame)][1], 31, 22,
-                                                  0, 'h', self.player.x, self.player.y, 75, 75)
+                                                  0, 'h', self.player.x + 15, self.player.y, 75, 75)
 
 attack_sprites = [
     (0, 0, 62), (63, 0, 62), (126, 0, 62), (189, 0, 62),
@@ -168,20 +168,20 @@ class Attack:
         if self.player.xdir == 0:
             if self.player.face_dir == 1:  # right
                 self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
-                                                       attack_sprites[int(self.player.frame)][2], 31, 0, ' ', self.player.x - 5, self.player.y + 15, 100, 100)
+                                                       attack_sprites[int(self.player.frame)][2], 31, 0, ' ', self.player.x + 30, self.player.y + 15, 150, 100)
             else:  # face_dir == -1: # left
                 self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
-                                                       attack_sprites[int(self.player.frame)][2], 31, 0, 'h', self.player.x - 5, self.player.y + 15, 100, 100)
+                                                       attack_sprites[int(self.player.frame)][2], 31, 0, 'h', self.player.x - 30, self.player.y + 15, 150, 100)
         elif self.player.xdir == 1:
             self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0],
                                                    attack_sprites[int(self.player.frame)][1],
                                                    attack_sprites[int(self.player.frame)][2], 31, 0, ' ',
-                                                   self.player.x - 5, self.player.y + 15, 100, 100)
+                                                   self.player.x + 30, self.player.y + 15, 150, 100)
         else:
             self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0],
                                                    attack_sprites[int(self.player.frame)][1],
                                                    attack_sprites[int(self.player.frame)][2], 31, 0, 'h',
-                                                   self.player.x - 5, self.player.y + 15, 100, 100)
+                                                   self.player.x - 30, self.player.y + 15, 150, 100)
 
 class PlayerS:
     def __init__(self):
@@ -291,7 +291,7 @@ class PlayerS:
             self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
 
     def get_bb(self):
-        return self.x - 40, self.y - 40, self.x + 40, self.y + 40
+        return self.x - 30, self.y - 40, self.x + 30, self.y + 40
 
     def handle_collision(self, group, other):
         if group == 'player:monster' and self.protect == False:
