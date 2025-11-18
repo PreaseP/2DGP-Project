@@ -36,7 +36,7 @@ def event_attack(e):
 
 # Player Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 20.0 * (userdata.playerSkill['general'][2] * 0.1 + 1.0)  # Km / Hour
+RUN_SPEED_KMPH = 20.0 * (userdata.playerSkill['general'][2] * 0.2 + 1.0) # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -94,8 +94,8 @@ class Run:
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         # self.player.frame = 7
-        self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time
-        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
+        self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
+        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
 
     def draw(self):
         if self.player.xdir == 0:
@@ -184,6 +184,7 @@ class PlayerG:
                      * userdata.weaponUp[userdata.playerWeapon['gun'][1]]) *
                     (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
         self.hp = userdata.maxHealth
+        self.speed = 1.0 + 0.1 * (userdata.playerSkill['general'][2])
 
         # 연속 발사 관련
         self.fire_rate = 1.5  # 초당 발사 수 (원하면 조정)
@@ -272,11 +273,10 @@ class PlayerG:
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
                 if userdata.playerWeapon['gun'][0] == 1 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
                     self.skill1()
+                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
                 elif userdata.playerWeapon['gun'][0] == 2 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
                     self.state_machine.handle_state_event(('SKILL2', event))
-
-                self.weapon_time = 1.0  # 스킬 쿨타임 설정
-            
+                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
@@ -290,7 +290,6 @@ class PlayerG:
         draw_rectangle(*self.get_bb())
         if self.weapon_time > 0.0:
             self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
-        
 
 
     def skill1(self):

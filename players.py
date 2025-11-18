@@ -90,8 +90,8 @@ class Run:
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
-        self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time
-        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
+        self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
+        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
 
     def draw(self):
         if self.player.xdir == 0:
@@ -136,8 +136,8 @@ class Attack:
     def do(self):
         # 공격 애니메이션 프레임 업데이트
         self.player.frame = (self.player.frame + FRAMES_PER_ATTACK * ATTACK_PER_TIME * game_framework.frame_time)
-        self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time
-        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time
+        self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
+        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
         # 공격 애니메이션이 끝나면 상태 전환
 
         if self.player.xdir != 0:
@@ -198,6 +198,7 @@ class PlayerS:
                      * userdata.weaponUp[userdata.playerWeapon['sword'][1]]) *
                     (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
         self.hp = userdata.maxHealth
+        self.speed = 1.0 + 0.1 * (userdata.playerSkill['general'][2])
 
         self.weapon_time = 0.0
         self.skill1_cnt = 0
@@ -264,10 +265,11 @@ class PlayerS:
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
                 if userdata.playerWeapon['sword'][0] == 1 and userdata.playerWeapon['sword'][1] >= 2 and self.weapon_time <= 0.0:
                     self.skill1()
+                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
                 elif userdata.playerWeapon['sword'][0] == 2 and userdata.playerWeapon['sword'][1] >= 2 and self.weapon_time <= 0.0:
-                    pass
+                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
 
-                self.weapon_time = 1.0  # 스킬 쿨타임 설정
+
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
