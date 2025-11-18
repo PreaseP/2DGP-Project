@@ -128,8 +128,7 @@ class Skill2:
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
         laser_atk = self.player.atk
-        if self.player.xdir != 0:
-            self.player.face_dir = self.player.xdir
+
         if userdata.playerWeapon['gun'][0] == 5:
             laser_atk *= 2.0  # 스킬2 공격력 증가
         elif userdata.playerWeapon['gun'][0] >= 2:
@@ -154,23 +153,13 @@ class Skill2:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
-        if self.player.xdir == 0:
-            if self.player.face_dir == 1:  # right
-                self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
-                                                       74, 33, 0, ' ', self.player.x + 12, self.player.y + 15, 100, 100)
-            else:  # face_dir == -1: # left
-                self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
-                                                       74, 33, 0, 'h', self.player.x - 12, self.player.y + 15, 100, 100)
-        elif self.player.xdir == 1:
-            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0],
-                                                   skill2_sprites[int(self.player.frame)][1],
-                                                   74, 33, 0, ' ',
-                                                   self.player.x + 12, self.player.y + 15, 100, 100)
-        else:
-            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0],
-                                                   skill2_sprites[int(self.player.frame)][1],
-                                                   74, 33, 0, 'h',
-                                                   self.player.x - 12, self.player.y + 15, 100, 100)
+        if self.player.face_dir == 1:  # right
+            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
+                                                   74, 33, 0, ' ', self.player.x + 12, self.player.y + 15, 100, 100)
+        else:  # face_dir == -1: # left
+            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
+                                                   74, 33, 0, 'h', self.player.x - 12, self.player.y + 15, 100, 100)
+
 
 class PlayerG:
     def __init__(self):
@@ -294,7 +283,6 @@ class PlayerG:
             pass
         else:
             self.state_machine.draw()
-            
         draw_rectangle(*self.get_bb())
         if self.weapon_time > 0.0:
             self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
