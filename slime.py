@@ -133,6 +133,16 @@ class Slime:
             game_world.add_object(print_damage, 3)
             self.protect = True
             self.protect_timer = 0.6
+            if group == 'nonBullet:monster':
+                if other.face_dir > 0:
+                    self.x += 10
+                else:
+                    self.x -= 10
+            elif group == 'bullet:monster':
+                if other.dx > 0:
+                    self.x += 10
+                else:
+                    self.x -= 10
             if self.hp <= 0:
                 game_world.remove_object(self)
                 userdata.add_exp(50)
