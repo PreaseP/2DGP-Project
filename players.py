@@ -92,6 +92,8 @@ class Run:
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
         self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
+        if self.player.xdir != 0:
+            self.player.face_dir = self.player.xdir
 
     def draw(self):
         if self.player.xdir == 0:
@@ -279,7 +281,11 @@ class PlayerS:
         else:
             self.state_machine.handle_state_event(('INPUT', event))
     def draw(self):
-        self.state_machine.draw()
+        if self.protect_timer > 0.5 and int(self.protect_timer * 10) % 2 == 0:
+            pass
+        else:
+            self.state_machine.draw()
+
         draw_rectangle(*self.get_bb())
         if self.weapon_time > 0.0:
             self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
