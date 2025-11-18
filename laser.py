@@ -18,14 +18,14 @@ class Laser:
         self.x = x
         self.y = y
         self.atk = atk
-        dx = target_x - x
-        dy = target_y - y
-        dist = math.hypot(dx, dy)
+        self.dx = target_x - x
+        self.dy = target_y - y
+        dist = math.hypot(self.dx, self.dy)
         if dist == 0:
             self.vx, self.vy = 0, 0
         else:
-            self.vx = dx / dist * speed
-            self.vy = dy / dist * speed
+            self.vx = self.dx / dist * speed
+            self.vy = self.dy / dist * speed
         self.w = 200
         self.h = 100
         self.to_remove = False
