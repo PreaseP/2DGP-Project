@@ -12,7 +12,7 @@ SCREEN_H = 720
 class Laser:
     image = None
 
-    def __init__(self, x, y, target_x, target_y, speed = 25, atk = 10):
+    def __init__(self, x, y, target_x, target_y, speed = 25, atk = 10, w = 200, h = 100):
         if Laser.image == None:
             Laser.image = load_image('resources/sprites/gun_skill3_effect.png')
         self.x = x
@@ -26,8 +26,8 @@ class Laser:
         else:
             self.vx = self.dx / dist * speed
             self.vy = self.dy / dist * speed
-        self.w = 200
-        self.h = 100
+        self.w = w
+        self.h = h
         self.to_remove = False
 
     def update(self):
@@ -43,7 +43,7 @@ class Laser:
                 pass
 
     def draw(self):
-        self.image.draw(self.x, self.y, 200, 100)
+        self.image.draw(self.x, self.y, self.w, self.h)
 
         draw_rectangle(self.x - self.w/2, self.y - self.h/2,
                        self.x + self.w/2, self.y + self.h/2)
