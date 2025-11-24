@@ -8,6 +8,7 @@ import game_framework
 import userdata
 from bullet import Bullet
 from laser import Laser
+from burst import Burst
 
 from state_machine import StateMachine
 
@@ -19,6 +20,9 @@ def mouse_click(e):
 
 def mouse_release(e):
     return e[0] == 'INPUT' and e[1].type == SDL_MOUSEBUTTONUP
+
+def event_skill2(e):
+    return e[0] == 'SKILL2'
 
 def event_skill3(e):
     return e[0] == 'SKILL3'
@@ -108,22 +112,22 @@ class Run:
         if self.player.xdir == 0:
             if self.player.face_dir == 1:  # right
                 self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 20, 22,
-                                                      0, ' ', self.player.x, self.player.y, 75, 75)
+                                                      0, ' ', self.player.x + 5, self.player.y, 75, 75)
             else:  # face_dir == -1: # left
                 self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 20, 22,
-                                                      0, 'h', self.player.x, self.player.y, 75, 75)
+                                                      0, 'h', self.player.x - 5, self.player.y, 75, 75)
         elif self.player.xdir == 1:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
                                                   run_sprites[int(self.player.frame)][1], 20, 22,
-                                                  0, ' ', self.player.x, self.player.y, 75, 75)
+                                                  0, ' ', self.player.x + 5, self.player.y, 75, 75)
         else:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
                                                   run_sprites[int(self.player.frame)][1], 20, 22,
-                                                  0, 'h', self.player.x, self.player.y, 75, 75)
+                                                  0, 'h', self.player.x - 5, self.player.y, 75, 75)
 
 skill2_sprites = [
-    [(1, 1), (77, 1), (153, 1), (229, 1), (305, 1), (381, 1)],
-    [(1, 1), (77, 1), (153, 1), (229, 1), (305, 1), (381, 1)]
+    (0, 50, 100, 150, 200, 250),
+    (0, 82, 164, 246, 328, 410, 492)
 ]
 
 class Skill2:
@@ -132,27 +136,32 @@ class Skill2:
 
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
-        burst_atk = self.player.atk
+        self.burst_atk = self.player.atk
 
-        lw, lh = 200, 100
         if userdata.playerWeapon['gun'][1] == 5:
-            burst_atk *= 2.5  # 스킬3 공격력 증가
-            lw, lh = 250, 125
+            self.burst_atk *= 1.75  # 스킬2 공격력 증가
+            self.second_burst = True
         elif userdata.playerWeapon['gun'][1] >= 2:
-            burst_atk *= 2.0  # 스킬3 공격력 증가
+            self.burst_atk *= 1.25  # 스킬2 공격력 증가
 
-        laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y, atk = burst_atk, w = lw, h = lh)
-        game_world.add_object(laser, 1)
-        game_world.add_collision_pair('bullet:monster', laser, None)
+        burst = Burst(self.player.x + self.player.xdir * 75, self.player.y, self.player.face_dir * 1280, face_dir = self.player.face_dir, xdir = self.player.xdir, atk = self.burst_atk)
+        game_world.add_object(burst, 1)
+        game_world.add_collision_pair('bullet:monster', burst, None)
 
     def exit(self, e):
         pass
 
     def do(self):
         # 공격 애니메이션 프레임 업데이트
-        # self.player.frame = (self.player.frame + FRAMES_PER_SKILL2[userdata.playerWeapon['gun'][1]] * SKILL2_PER_TIME * game_framework.frame_time)
-        self.player.frame = 0
+        self.player.frame = (self.player.frame + FRAMES_PER_SKILL2[userdata.playerWeapon['gun'][1]] * SKILL2_PER_TIME * game_framework.frame_time)
         # 공격 애니메이션이 끝나면 상태 전환
+
+        if int(self.player.frame) == 3 and self.second_burst:
+            burst = Burst(self.player.x - self.player.xdir * 75, self.player.y, self.player.face_dir * -1280,
+                          face_dir=self.player.face_dir * -1, xdir=self.player.xdir, atk=self.burst_atk)
+            game_world.add_object(burst, 1)
+            game_world.add_collision_pair('bullet:monster', burst, None)
+            self.second_burst = False
 
         if self.player.frame >= FRAMES_PER_SKILL2[userdata.playerWeapon['gun'][1]]:
             if self.player.xdir == 0 and self.player.ydir == 0:
@@ -163,18 +172,18 @@ class Skill2:
     def draw(self):
         if userdata.playerWeapon['gun'][1] == 5:
             if self.player.face_dir == 1:  # right
-                self.player.skill2_image2.clip_composite_draw(skill2_sprites[1][int(self.player.frame)][0], 0,
-                                                       74, 33, 0, ' ', self.player.x + 120, self.player.y + 20, 100, 100)
+                self.player.skill2_image2.clip_composite_draw(skill2_sprites[1][int(self.player.frame)], 0,
+                                                       81, 28, 0, ' ', self.player.x + 5, self.player.y + 10, 300, 95)
             else:  # face_dir == -1: # left
-                self.player.skill2_image2.clip_composite_draw(skill2_sprites[1][int(self.player.frame)][0], 0,
-                                                       74, 33, 0, 'h', self.player.x - 120, self.player.y + 20, 100, 100)
+                self.player.skill2_image2.clip_composite_draw(skill2_sprites[1][int(self.player.frame)], 0,
+                                                       81, 28, 0, 'h', self.player.x - 5, self.player.y + 10, 300, 95)
         else:
             if self.player.face_dir == 1:  # right
-                self.player.skill2_image1.clip_composite_draw(skill2_sprites[0][int(self.player.frame)][0], 0,
-                                                       74, 33, 0, ' ', self.player.x + 120, self.player.y + 20, 100, 100)
+                self.player.skill2_image1.clip_composite_draw(skill2_sprites[0][int(self.player.frame)], 0,
+                                                        81, 28, 0, ' ', self.player.x + 5, self.player.y + 10, 300, 95)
             else:  # face_dir == -1: # left
-                self.player.skill2_image1.clip_composite_draw(skill3_sprites[0][int(self.player.frame)][0], 0,
-                                                       74, 33, 0, 'h', self.player.x - 120, self.player.y + 20, 100, 100)
+                self.player.skill2_image1.clip_composite_draw(skill2_sprites[0][int(self.player.frame)], 0,
+                                                        81, 28, 0, 'h', self.player.x - 5, self.player.y + 10, 300, 95)
 
 skill3_sprites = [
     (1, 1), (77, 1), (153, 1), (229, 1),
@@ -192,13 +201,13 @@ class Skill3:
         lw, lh = 200, 100
         if userdata.playerWeapon['gun'][1] == 5:
             laser_atk *= 2.5  # 스킬3 공격력 증가
-            lw, lh = 250, 125
+            lw, lh = 225, 110
         elif userdata.playerWeapon['gun'][1] >= 2:
             laser_atk *= 2.0  # 스킬3 공격력 증가
-
-        laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y, atk = laser_atk, w = lw, h = lh)
-        game_world.add_object(laser, 1)
-        game_world.add_collision_pair('bullet:monster', laser, None)
+        for k in range(2):
+            laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y + 200 - 400 * k, atk = laser_atk, w = lw, h = lh)
+            game_world.add_object(laser, 1)
+            game_world.add_collision_pair('bullet:monster', laser, None)
 
     def exit(self, e):
         pass
@@ -257,15 +266,17 @@ class PlayerG:
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
+        self.SKILL2 = Skill2(self)
         self.SKILL3 = Skill3(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
-                self.IDLE: {event_run: self.RUN, event_skill3: self.SKILL3},
+                self.IDLE: {event_run: self.RUN, event_skill2: self.SKILL2, event_skill3: self.SKILL3},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
-                self.RUN: {event_stop: self.IDLE, event_skill3: self.SKILL3},
-                self.SKILL3: {}
+                self.RUN: {event_run: self.RUN, event_stop: self.IDLE, event_skill2: self.SKILL2, event_skill3: self.SKILL3},
+                self.SKILL3: {},
+                self.SKILL2: {}
             }
         )
 
