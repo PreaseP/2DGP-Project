@@ -49,7 +49,12 @@ FRAMES_PER_ACTION = 8
 # Player Skill2 Action Speed
 TIME_PER_SKILL2 = 0.5
 SKILL2_PER_TIME = 1.0 / TIME_PER_SKILL2
-FRAMES_PER_SKILL2 = 6
+FRAMES_PER_SKILL2 = (6, 6, 6, 6, 6, 7)
+
+# Player Skill3 Action Speed
+TIME_PER_SKILL3 = 0.5
+SKILL3_PER_TIME = 1.0 / TIME_PER_SKILL3
+FRAMES_PER_SKILL3 = 6
 
 class Idle:
 
@@ -116,6 +121,61 @@ class Run:
                                                   run_sprites[int(self.player.frame)][1], 20, 22,
                                                   0, 'h', self.player.x, self.player.y, 75, 75)
 
+skill2_sprites = [
+    [(1, 1), (77, 1), (153, 1), (229, 1), (305, 1), (381, 1)],
+    [(1, 1), (77, 1), (153, 1), (229, 1), (305, 1), (381, 1)]
+]
+
+class Skill2:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, e):
+        self.player.frame = 0  # 공격 프레임 초기화
+        burst_atk = self.player.atk
+
+        lw, lh = 200, 100
+        if userdata.playerWeapon['gun'][1] == 5:
+            burst_atk *= 2.5  # 스킬3 공격력 증가
+            lw, lh = 250, 125
+        elif userdata.playerWeapon['gun'][1] >= 2:
+            burst_atk *= 2.0  # 스킬3 공격력 증가
+
+        laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y, atk = burst_atk, w = lw, h = lh)
+        game_world.add_object(laser, 1)
+        game_world.add_collision_pair('bullet:monster', laser, None)
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        # 공격 애니메이션 프레임 업데이트
+        # self.player.frame = (self.player.frame + FRAMES_PER_SKILL2[userdata.playerWeapon['gun'][1]] * SKILL2_PER_TIME * game_framework.frame_time)
+        self.player.frame = 0
+        # 공격 애니메이션이 끝나면 상태 전환
+
+        if self.player.frame >= FRAMES_PER_SKILL2[userdata.playerWeapon['gun'][1]]:
+            if self.player.xdir == 0 and self.player.ydir == 0:
+                self.player.state_machine.cur_state = self.player.IDLE
+            else:
+                self.player.state_machine.cur_state = self.player.RUN
+
+    def draw(self):
+        if userdata.playerWeapon['gun'][1] == 5:
+            if self.player.face_dir == 1:  # right
+                self.player.skill2_image2.clip_composite_draw(skill2_sprites[1][int(self.player.frame)][0], 0,
+                                                       74, 33, 0, ' ', self.player.x + 120, self.player.y + 20, 100, 100)
+            else:  # face_dir == -1: # left
+                self.player.skill2_image2.clip_composite_draw(skill2_sprites[1][int(self.player.frame)][0], 0,
+                                                       74, 33, 0, 'h', self.player.x - 120, self.player.y + 20, 100, 100)
+        else:
+            if self.player.face_dir == 1:  # right
+                self.player.skill2_image1.clip_composite_draw(skill2_sprites[0][int(self.player.frame)][0], 0,
+                                                       74, 33, 0, ' ', self.player.x + 120, self.player.y + 20, 100, 100)
+            else:  # face_dir == -1: # left
+                self.player.skill2_image1.clip_composite_draw(skill3_sprites[0][int(self.player.frame)][0], 0,
+                                                       74, 33, 0, 'h', self.player.x - 120, self.player.y + 20, 100, 100)
+
 skill3_sprites = [
     (1, 1), (77, 1), (153, 1), (229, 1),
     (305, 1), (381, 1)
@@ -145,10 +205,10 @@ class Skill3:
 
     def do(self):
         # 공격 애니메이션 프레임 업데이트
-        self.player.frame = (self.player.frame + FRAMES_PER_SKILL2 * SKILL2_PER_TIME * game_framework.frame_time)
+        self.player.frame = (self.player.frame + FRAMES_PER_SKILL3 * SKILL3_PER_TIME * game_framework.frame_time)
         # 공격 애니메이션이 끝나면 상태 전환
 
-        if self.player.frame >= FRAMES_PER_SKILL2:
+        if self.player.frame >= FRAMES_PER_SKILL3:
             if self.player.xdir == 0 and self.player.ydir == 0:
                 self.player.state_machine.cur_state = self.player.IDLE
             else:
@@ -172,6 +232,8 @@ class PlayerG:
         self.xdir = 0
         self.ydir = 0
         self.image = load_image('resources/sprites/gun_move.png')
+        self.skill2_image1 = load_image('resources/sprites/gun_skill2_set1.png')
+        self.skill2_image2 = load_image('resources/sprites/gun_skill2_set2.png')
         self.skill3_image = load_image('resources/sprites/gun_skill3_set.png')
         self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.attacking = False
@@ -266,12 +328,15 @@ class PlayerG:
             elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-                if userdata.playerWeapon['gun'][0] == 0 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
-                    self.skill1()
+                if userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
+                    if userdata.playerWeapon['gun'][0] == 0:
+                        self.skill1()
+                    elif userdata.playerWeapon['gun'][0] == 1:
+                        self.state_machine.handle_state_event(('SKILL2', event))
+                    elif userdata.playerWeapon['gun'][0] == 2:
+                        self.state_machine.handle_state_event(('SKILL3', event))
                     self.weapon_time = 1.0  # 스킬 쿨타임 설정
-                elif userdata.playerWeapon['gun'][0] == 2 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
-                    self.state_machine.handle_state_event(('SKILL3', event))
-                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
+
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
