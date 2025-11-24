@@ -20,8 +20,8 @@ def mouse_click(e):
 def mouse_release(e):
     return e[0] == 'INPUT' and e[1].type == SDL_MOUSEBUTTONUP
 
-def event_skill2(e):
-    return e[0] == 'SKILL2'
+def event_skill3(e):
+    return e[0] == 'SKILL3'
 
 def event_stop(e):
     return e[0] == 'STOP'
@@ -116,12 +116,12 @@ class Run:
                                                   run_sprites[int(self.player.frame)][1], 20, 22,
                                                   0, 'h', self.player.x, self.player.y, 75, 75)
 
-skill2_sprites = [
+skill3_sprites = [
     (1, 1), (77, 1), (153, 1), (229, 1),
     (305, 1), (381, 1)
 ]
 
-class Skill2:
+class Skill3:
     def __init__(self, player):
         self.player = player
 
@@ -154,10 +154,10 @@ class Skill2:
 
     def draw(self):
         if self.player.face_dir == 1:  # right
-            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
+            self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
                                                    74, 33, 0, ' ', self.player.x + 120, self.player.y + 20, 300, 115)
         else:  # face_dir == -1: # left
-            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)][0], skill2_sprites[int(self.player.frame)][1],
+            self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
                                                    74, 33, 0, 'h', self.player.x - 120, self.player.y + 20, 300, 115)
 
 
@@ -193,15 +193,15 @@ class PlayerG:
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
-        self.SKILL2 = Skill2(self)
+        self.SKILL3 = Skill3(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
-                self.IDLE: {event_run: self.RUN, event_skill2: self.SKILL2},
+                self.IDLE: {event_run: self.RUN, event_skill3: self.SKILL3},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
-                self.RUN: {event_stop: self.IDLE, event_skill2: self.SKILL2},
-                self.SKILL2: {}
+                self.RUN: {event_stop: self.IDLE, event_skill3: self.SKILL3},
+                self.SKILL3: {}
             }
         )
 
@@ -268,7 +268,7 @@ class PlayerG:
                     self.skill1()
                     self.weapon_time = 1.0  # 스킬 쿨타임 설정
                 elif userdata.playerWeapon['gun'][0] == 2 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
-                    self.state_machine.handle_state_event(('SKILL2', event))
+                    self.state_machine.handle_state_event(('SKILL3', event))
                     self.weapon_time = 1.0  # 스킬 쿨타임 설정
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
