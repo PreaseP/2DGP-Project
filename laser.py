@@ -14,7 +14,7 @@ class Laser:
 
     def __init__(self, x, y, target_x, target_y, speed = 25, atk = 10):
         if Laser.image == None:
-            Laser.image = load_image('resources/sprites/gun_skill2_effect.png')
+            Laser.image = load_image('resources/sprites/gun_skill3_effect.png')
         self.x = x
         self.y = y
         self.atk = atk

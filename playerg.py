@@ -170,7 +170,7 @@ class PlayerG:
         self.xdir = 0
         self.ydir = 0
         self.image = load_image('resources/sprites/gun_move.png')
-        self.skill2_image = load_image('resources/sprites/gun_skill2_set.png')
+        self.skill3_image = load_image('resources/sprites/gun_skill3_set.png')
         self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.attacking = False
         self.atk = ((userdata.weaponAtk[userdata.playerWeapon['gun'][0]] + userdata.weaponAtk[userdata.playerWeapon['gun'][0]]
