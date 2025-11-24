@@ -18,7 +18,7 @@ class Laser:
         self.x = x
         self.y = y
         self.atk = atk
-        self.dx = target_x - x
+        self.dx = target_x
         self.dy = target_y - y
         dist = math.hypot(self.dx, self.dy)
         if dist == 0:
@@ -28,7 +28,6 @@ class Laser:
             self.vy = self.dy / dist * speed
         self.w = w
         self.h = h
-        self.to_remove = False
 
     def update(self):
         dt = game_framework.frame_time
