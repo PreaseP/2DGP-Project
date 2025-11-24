@@ -21,6 +21,8 @@ class SwordEffect:
             self.x += self.face_dir * 80
         self.frame = 0
         self.atk = atk
+        self.w = 75
+        self.h = 75
 
     def draw(self):
         if self.xdir == 0:
@@ -28,26 +30,26 @@ class SwordEffect:
                 self.image.clip_composite_draw(effect_sprites[int(self.frame)][0],
                                                    effect_sprites[int(self.frame)][1],
                                                    effect_sprites[int(self.frame)][2], 32, 0, ' ', self.x,
-                                                   self.y, 75, 75)
+                                                   self.y, self.w, self.h)
             else:
                 self.image.clip_composite_draw(effect_sprites[int(self.frame)][0],
                                                 effect_sprites[int(self.frame)][1],
                                                 effect_sprites[int(self.frame)][2], 32, 0, 'h', self.x,
-                                                self.y, 75, 75)
+                                                self.y, self.w, self.h)
         elif self.xdir == 1:
             self.image.clip_composite_draw(effect_sprites[int(self.frame)][0],
                                             effect_sprites[int(self.frame)][1],
                                             effect_sprites[int(self.frame)][2], 32, 0, ' ',
-                                            self.x, self.y, 75, 75)
+                                            self.x, self.y, self.w, self.h)
         else:
             self.image.clip_composite_draw(effect_sprites[int(self.frame)][0],
                                             effect_sprites[int(self.frame)][1],
                                             effect_sprites[int(self.frame)][2], 32, 0, 'h',
-                                            self.x, self.y, 75, 75)
+                                            self.x, self.y, self.w, self.h)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 30, self.y - 40, self.x + 40, self.y + 40
+        return self.x - self.w/2, self.y - self.h/2, self.x + self.w/2, self.y + self.h/2
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ATTACK * ATTACK_PER_TIME * game_framework.frame_time)
