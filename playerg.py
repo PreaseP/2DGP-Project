@@ -131,10 +131,10 @@ class Skill3:
 
         lw, lh = 200, 100
         if userdata.playerWeapon['gun'][1] == 5:
-            laser_atk *= 2.5  # 스킬2 공격력 증가
+            laser_atk *= 2.5  # 스킬3 공격력 증가
             lw, lh = 250, 125
         elif userdata.playerWeapon['gun'][1] >= 2:
-            laser_atk *= 1.5  # 스킬2 공격력 증가
+            laser_atk *= 2.0  # 스킬3 공격력 증가
 
         laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y, atk = laser_atk, w = lw, h = lh)
         game_world.add_object(laser, 1)
