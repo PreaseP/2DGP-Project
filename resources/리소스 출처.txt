@@ -34,20 +34,16 @@
 (Risk of Rain 2 : Soldier's Syringe, Medkit, Paul's Goat Hoof)
 
 보스 몬스터
-- https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/488069
-(Risk of Rain Returns, Black Imp) 
 - https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/487953
 (Risk of Rain Returns, Gup, Geep & Gip)
+- https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/488069
+(Risk of Rain Returns, Black Imp)
 - https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/487876
 (Risk of Rain Returns, Parent)
 
 파밍 스테이지
 - https://www.spriters-resource.com/pc_computer/cryptofthenecrodancer/asset/116922
 (Crypt of the NecroDancer, Slimes)
-- https://www.spriters-resource.com/game_boy_advance/mother3/asset/14633
-(Mother 3, Titanian)
-- https://www.spriters-resource.com/game_boy_advance/mother3/asset/6117
-(Mother 3, Titany)
 
 유물 스테이지 1 (평범?한 분위기)
 https://www.spriters-resource.com/nintendo_switch/cadenceofhyrule/asset/118505
