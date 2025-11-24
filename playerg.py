@@ -129,9 +129,9 @@ class Skill2:
         self.player.frame = 0  # 공격 프레임 초기화
         laser_atk = self.player.atk
 
-        if userdata.playerWeapon['gun'][0] == 5:
+        if userdata.playerWeapon['gun'][1] == 5:
             laser_atk *= 2.0  # 스킬2 공격력 증가
-        elif userdata.playerWeapon['gun'][0] >= 2:
+        elif userdata.playerWeapon['gun'][1] >= 2:
             laser_atk *= 1.5  # 스킬2 공격력 증가
 
         laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y, atk = laser_atk)
@@ -264,7 +264,7 @@ class PlayerG:
             elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-                if userdata.playerWeapon['gun'][0] == 1 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
+                if userdata.playerWeapon['gun'][0] == 0 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
                     self.skill1()
                     self.weapon_time = 1.0  # 스킬 쿨타임 설정
                 elif userdata.playerWeapon['gun'][0] == 2 and userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
