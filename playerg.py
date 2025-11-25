@@ -266,6 +266,7 @@ class Slide:
         self.player.frame = (self.player.frame + FRAMES_PER_SLIDE * SLIDE_PER_TIME * game_framework.frame_time)
         # self.player.frame = 3.0
         self.player.x += self.player.face_dir * SLIDE_SPEED_PPS * game_framework.frame_time * self.player.speed
+        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
 
         if self.player.frame >= FRAMES_PER_SLIDE:
             self.player.frame = 0.0
@@ -322,7 +323,9 @@ class PlayerG:
 
         self.weapon_time = 0.0
 
-        self.protect_timer = 0.0
+        self.slide_time = 0.0
+
+        self.protect_time = 0.0
         self.protect = False
 
         self.IDLE = Idle(self)
@@ -357,6 +360,11 @@ class PlayerG:
             if self.weapon_time < 0.0:
                 self.weapon_time = 0.0
 
+        if self.slide_time > 0.0:
+            self.slide_time -= dt
+            if self.slide_time < 0.0:
+                self.slide_time = 0.0
+
         if self.attacking and self.fire_cooldown <= 0:
             # 마우스 좌표는 이미 pico2d 좌표로 변환되어 있어야 함
             b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y, atk=self.atk)
@@ -364,10 +372,10 @@ class PlayerG:
             game_world.add_collision_pair('bullet:monster', b, None)
             self.fire_cooldown = self.fire_interval
 
-        if self.protect_timer > 0.0:
-            self.protect_timer -= game_framework.frame_time
-            if self.protect_timer < 0.0:
-                self.protect_timer = 0.0
+        if self.protect_time > 0.0:
+            self.protect_time -= dt
+            if self.protect_time < 0.0:
+                self.protect_time = 0.0
                 self.protect = False
 
     def handle_event(self, event):
@@ -383,8 +391,9 @@ class PlayerG:
                 elif event.key == SDLK_s:
                     self.ydir -= 1
                 elif event.key == SDLK_LSHIFT:
-                    if userdata.playerSkill['gun'][1] >= 1:
+                    if userdata.playerSkill['gun'][1] >= 1 and self.slide_time <= 0.0:
                         self.state_machine.handle_state_event(('SLIDE', None))
+                        self.slide_time = 8.0
             elif event.type == SDL_KEYUP:
                 if event.key == SDLK_a:
                     self.xdir += 1
@@ -414,7 +423,7 @@ class PlayerG:
                         self.state_machine.handle_state_event(('SKILL2', event))
                     elif userdata.playerWeapon['gun'][0] == 2:
                         self.state_machine.handle_state_event(('SKILL3', event))
-                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
+                    self.weapon_time = 10.0  # 스킬 쿨타임 설정
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
@@ -424,13 +433,15 @@ class PlayerG:
         else:
             self.state_machine.handle_state_event(('INPUT', event))
     def draw(self):
-        if self.protect_timer > 0.5 and int(self.protect_timer * 10) % 2 == 0:
+        if self.protect_time > 0.5 and int(self.protect_time * 10) % 2 == 0:
             pass
         else:
             self.state_machine.draw()
         draw_rectangle(*self.get_bb())
         if self.weapon_time > 0.0:
             self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
+        if self.slide_time > 0.0:
+            self.font.draw(480, 80, f'slide skill cooldown: {self.slide_time:.1f}s', (255, 255, 0))
 
 
     def skill1(self):
@@ -452,5 +463,5 @@ class PlayerG:
             if self.hp > 0:
                 self.hp -= 1
             self.protect = True
-            self.protect_timer = 1.5
+            self.protect_time = 1.5
 
