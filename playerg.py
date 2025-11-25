@@ -1,6 +1,6 @@
 from pico2d import load_image, get_time, load_font, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
-    SDL_MOUSEMOTION, SDL_BUTTON_RIGHT
+    SDL_MOUSEMOTION, SDL_BUTTON_RIGHT, SDLK_LSHIFT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
@@ -33,6 +33,9 @@ def event_stop(e):
 def event_run(e):
     return e[0] == 'RUN'
 
+def event_slide(e):
+    return e[0] == 'SLIDE'
+
 def event_attack(e):
     return e[0] == 'ATTACK'
 
@@ -40,15 +43,23 @@ def event_attack(e):
 
 # Player Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 20.0 * (userdata.playerSkill['general'][2] * 0.2 + 1.0) # Km / Hour
+RUN_SPEED_KMPH = 20.0 # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+# Player Slide Speed
+SLIDE_SPEED_PPS = RUN_SPEED_PPS * 1.5
 
 # Player Move Action Speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
+
+# Player Slide Action Speed
+TIME_PER_SLIDE = 0.5
+SLIDE_PER_TIME = 1.0 / TIME_PER_SLIDE
+FRAMES_PER_SLIDE = 13
 
 # Player Skill2 Action Speed
 TIME_PER_SKILL2 = 0.5
@@ -231,6 +242,54 @@ class Skill3:
             self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
                                                    74, 33, 0, 'h', self.player.x - 120, self.player.y + 20, 300, 115)
 
+slide_sprites = [ (0, 62), (54, 62), (108, 62),
+                  (0, 35), (32, 35), (64, 35),
+                  (0, 35), (32, 35), (64, 35),
+                  (0, 0), (54, 0), (108, 0), (162, 0)]
+
+class Slide:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, e):
+        # 키 입력에 따라 방향 설정
+        self.player.frame = 0.0
+        self.player.slide = True
+
+        if self.player.xdir != 0:
+            self.player.face_dir = self.player.xdir
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        self.player.frame = (self.player.frame + FRAMES_PER_SLIDE * SLIDE_PER_TIME * game_framework.frame_time)
+        # self.player.frame = 3.0
+        self.player.x += self.player.face_dir * SLIDE_SPEED_PPS * game_framework.frame_time * self.player.speed
+
+        if self.player.frame >= FRAMES_PER_SLIDE:
+            self.player.frame = 0.0
+            self.player.slide = False
+            if self.player.xdir == 0 and self.player.ydir == 0:
+                self.player.state_machine.cur_state = self.player.IDLE
+            else:
+                self.player.state_machine.cur_state = self.player.RUN
+
+    def draw(self):
+        if 3.0 <= self.player.frame < 9.0:
+            if self.player.face_dir == 1:  # right
+                self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 31, 17,
+                                                      0, ' ', self.player.x - 5, self.player.y, 100, 75)
+            else:  # face_dir == -1: # left
+                self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 31, 17,
+                                                      0, 'h', self.player.x + 5, self.player.y, 100, 75)
+        else:
+            if self.player.face_dir == 1:  # right
+                self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 53, 25,
+                                                      0, ' ', self.player.x - 5, self.player.y + 10, 230, 90)
+            else:  # face_dir == -1: # left
+                self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 53, 25,
+                                                      0, 'h', self.player.x + 5, self.player.y + 10, 230, 90)
 
 class PlayerG:
     def __init__(self):
@@ -244,8 +303,10 @@ class PlayerG:
         self.skill2_image1 = load_image('resources/sprites/gun_skill2_set1.png')
         self.skill2_image2 = load_image('resources/sprites/gun_skill2_set2.png')
         self.skill3_image = load_image('resources/sprites/gun_skill3_set.png')
+        self.slide_image = load_image('resources/sprites/gun_slide.png')
         self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.attacking = False
+        self.slide = False
         self.atk = ((userdata.weaponAtk[userdata.playerWeapon['gun'][0]] + userdata.weaponAtk[userdata.playerWeapon['gun'][0]]
                      * userdata.weaponUp[userdata.playerWeapon['gun'][1]]) *
                     (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
@@ -268,15 +329,17 @@ class PlayerG:
         self.RUN = Run(self)
         self.SKILL2 = Skill2(self)
         self.SKILL3 = Skill3(self)
+        self.SLIDE = Slide(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
-                self.IDLE: {event_run: self.RUN, event_skill2: self.SKILL2, event_skill3: self.SKILL3},
+                self.IDLE: {event_run: self.RUN, event_skill2: self.SKILL2, event_skill3: self.SKILL3, event_slide: self.SLIDE},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
-                self.RUN: {event_run: self.RUN, event_stop: self.IDLE, event_skill2: self.SKILL2, event_skill3: self.SKILL3},
+                self.RUN: {event_run: self.RUN, event_stop: self.IDLE, event_skill2: self.SKILL2, event_skill3: self.SKILL3, event_slide: self.SLIDE},
                 self.SKILL3: {},
-                self.SKILL2: {}
+                self.SKILL2: {},
+                self.SLIDE: {}
             }
         )
 
@@ -308,7 +371,7 @@ class PlayerG:
                 self.protect = False
 
     def handle_event(self, event):
-        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_MOUSEMOTION):
+        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LSHIFT) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_MOUSEMOTION):
             cur_xdir, cur_ydir = self.xdir, self.ydir
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_a:
@@ -319,6 +382,9 @@ class PlayerG:
                     self.ydir += 1
                 elif event.key == SDLK_s:
                     self.ydir -= 1
+                elif event.key == SDLK_LSHIFT:
+                    if userdata.playerSkill['gun'][1] >= 1:
+                        self.state_machine.handle_state_event(('SLIDE', None))
             elif event.type == SDL_KEYUP:
                 if event.key == SDLK_a:
                     self.xdir += 1
@@ -335,11 +401,13 @@ class PlayerG:
                 # 좌표 변환 (SDL 위쪽 원점 -> pico2d 아래 원점)
                 self.last_mouse_x = event.x
                 self.last_mouse_y = 720 - event.y
+                if self.slide is True and userdata.playerSkill['gun'][1] == 1:
+                    return
                 self.attacking = True
             elif event.type == SDL_MOUSEBUTTONUP and event.button == SDL_BUTTON_LEFT:
                 self.attacking = False
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-                if userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0:
+                if userdata.playerWeapon['gun'][1] >= 2 and self.weapon_time <= 0.0 and self.slide is False:
                     if userdata.playerWeapon['gun'][0] == 0:
                         self.skill1()
                     elif userdata.playerWeapon['gun'][0] == 1:
@@ -347,7 +415,6 @@ class PlayerG:
                     elif userdata.playerWeapon['gun'][0] == 2:
                         self.state_machine.handle_state_event(('SKILL3', event))
                     self.weapon_time = 1.0  # 스킬 쿨타임 설정
-
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
