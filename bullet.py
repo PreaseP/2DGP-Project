@@ -1,6 +1,10 @@
 # python
 import math
+import random
+
 from pico2d import *
+
+import common
 import game_world
 import game_framework
 import userdata
@@ -12,7 +16,7 @@ SCREEN_H = 720
 class Bullet:
     image = None
 
-    def __init__(self, x, y, target_x, target_y, speed = 15, atk = 10):
+    def __init__(self, x, y, target_x, target_y, speed = 15, atk = 10, piercing = False, heal = False):
         if Bullet.image == None:
             Bullet.image = load_image('resources/sprites/bullet.png')
         self.x = x
@@ -29,6 +33,8 @@ class Bullet:
         self.w = 25
         self.h = 25
         self.to_remove = False
+        self.piercing = piercing
+        self.heal = heal
 
     def update(self):
         dt = game_framework.frame_time
@@ -54,7 +60,11 @@ class Bullet:
 
     def handle_collision(self, group, other):
         if group == 'bullet:monster':
-            if userdata.playerWeapon['gun'][0] == 1 and userdata.playerWeapon['gun'][1] == 5:
+            if self.heal and common.player.hp < userdata.maxHealth:
+                common.player.hp += random.choice[1, 2]
+                if common.player.hp > userdata.maxHealth:
+                    common.player.hp = userdata.maxHealth
+            if self.piercing:
                 pass
             else:
                 try:

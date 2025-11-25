@@ -59,7 +59,7 @@ FRAMES_PER_ACTION = 8
 # Player Slide Action Speed
 TIME_PER_SLIDE = 0.5
 SLIDE_PER_TIME = 1.0 / TIME_PER_SLIDE
-FRAMES_PER_SLIDE = 13
+FRAMES_PER_SLIDE = 16
 
 # Player Skill2 Action Speed
 TIME_PER_SKILL2 = 0.5
@@ -245,6 +245,7 @@ class Skill3:
 slide_sprites = [ (0, 62), (54, 62), (108, 62),
                   (0, 35), (32, 35), (64, 35),
                   (0, 35), (32, 35), (64, 35),
+                  (0, 35), (32, 35), (64, 35),
                   (0, 0), (54, 0), (108, 0), (162, 0)]
 
 class Slide:
@@ -264,7 +265,6 @@ class Slide:
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_SLIDE * SLIDE_PER_TIME * game_framework.frame_time)
-        # self.player.frame = 3.0
         self.player.x += self.player.face_dir * SLIDE_SPEED_PPS * game_framework.frame_time * self.player.speed
         self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
 
@@ -277,7 +277,7 @@ class Slide:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
-        if 3.0 <= self.player.frame < 9.0:
+        if 3.0 <= self.player.frame < 12.0:
             if self.player.face_dir == 1:  # right
                 self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 31, 17,
                                                       0, ' ', self.player.x - 5, self.player.y, 100, 75)
@@ -367,7 +367,10 @@ class PlayerG:
 
         if self.attacking and self.fire_cooldown <= 0:
             # 마우스 좌표는 이미 pico2d 좌표로 변환되어 있어야 함
-            b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y, atk=self.atk)
+            heal = False
+            if self.slide is True and userdata.playerSkill['gun'][1] == 2:
+                heal = True
+            b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y, atk=self.atk, heal=heal)
             game_world.add_object(b, 1)
             game_world.add_collision_pair('bullet:monster', b, None)
             self.fire_cooldown = self.fire_interval
@@ -450,7 +453,7 @@ class PlayerG:
         for dir_x, dir_y in directions:
             target_x = self.x + dir_x
             target_y = self.y + dir_y
-            b = Bullet(self.x, self.y, target_x, target_y, atk=self.atk)
+            b = Bullet(self.x, self.y, target_x, target_y, atk = self.atk, piercing = True)
             game_world.add_object(b, 1)
             game_world.add_collision_pair('bullet:monster', b, None)
 
