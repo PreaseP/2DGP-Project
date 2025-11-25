@@ -265,13 +265,14 @@ class PlayerS:
                 self.attacking = False
                 self.state_machine.handle_state_event(('INPUT', event))
             elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_RIGHT:
-                if userdata.playerWeapon['sword'][0] == 1 and userdata.playerWeapon['sword'][1] >= 2 and self.weapon_time <= 0.0:
-                    self.skill1()
+                if userdata.playerWeapon['sword'][1] >= 2 and self.weapon_time <= 0.0:
+                    if userdata.playerWeapon['sword'][0] == 0:
+                        self.skill1()
+                    elif userdata.playerWeapon['sword'][0] == 1:
+                        pass
+                    elif userdata.playerWeapon['sword'][0] == 2:
+                        pass
                     self.weapon_time = 1.0  # 스킬 쿨타임 설정
-                elif userdata.playerWeapon['sword'][0] == 2 and userdata.playerWeapon['sword'][1] >= 2 and self.weapon_time <= 0.0:
-                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
-
-
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
