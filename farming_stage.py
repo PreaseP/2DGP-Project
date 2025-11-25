@@ -9,9 +9,9 @@ import game_framework
 import game_world
 import userdata
 
-spawn_timer = 0.0
+import common
 
-player = None
+spawn_timer = 0.0
 
 def handle_events():
     event_list = get_events()
@@ -21,7 +21,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.change_mode(cockpit_mode)
         else:
-            player.handle_event(event)
+            common.player.handle_event(event)
 
 def init():
     global map
@@ -30,14 +30,12 @@ def init():
     global spawn_timer
     spawn_timer = 5.0
 
-    global player
-
     if userdata.playerType == 'S':
-        player = PlayerS()
+        common.player = PlayerS()
     else:
-        player = PlayerG()
-    game_world.add_object(player, 1)
-    game_world.add_collision_pair('player:monster', player, None)
+        common.player = PlayerG()
+    game_world.add_object(common.player, 1)
+    game_world.add_collision_pair('player:monster', common.player, None)
 
     slimes = [Slime(random.choice([random.randint(40, 400), random.randint(800, 1240)]), random.choice([random.randint(20, 200), random.randint(500, 700)]))
                      for _ in range (10)]
@@ -69,7 +67,7 @@ def draw():
     clear_canvas()
     map.draw(640, 360, 1280, 720)
     game_world.render()
-    userdata.show_status(player.hp)
+    userdata.show_status(common.player.hp)
     update_canvas()
 
 
