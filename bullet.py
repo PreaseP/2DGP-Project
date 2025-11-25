@@ -61,7 +61,7 @@ class Bullet:
     def handle_collision(self, group, other):
         if group == 'bullet:monster':
             if self.heal and common.player.hp < userdata.maxHealth:
-                common.player.hp += random.choice[1, 2]
+                common.player.hp += random.choice([1, 2])
                 if common.player.hp > userdata.maxHealth:
                     common.player.hp = userdata.maxHealth
             if self.piercing:
