@@ -144,6 +144,7 @@ skill2_sprites = [
 class Skill2:
     def __init__(self, player):
         self.player = player
+        self.second_burst = False
 
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
@@ -191,10 +192,10 @@ class Skill2:
         else:
             if self.player.face_dir == 1:  # right
                 self.player.skill2_image1.clip_composite_draw(skill2_sprites[0][int(self.player.frame)], 0,
-                                                        81, 28, 0, ' ', self.player.x + 5, self.player.y + 10, 300, 95)
+                                                        49, 27, 0, ' ', self.player.x + 65, self.player.y + 15, 200, 100)
             else:  # face_dir == -1: # left
                 self.player.skill2_image1.clip_composite_draw(skill2_sprites[0][int(self.player.frame)], 0,
-                                                        81, 28, 0, 'h', self.player.x - 5, self.player.y + 10, 300, 95)
+                                                        49, 27, 0, 'h', self.player.x - 65, self.player.y + 15, 200, 100)
 
 skill3_sprites = [
     (1, 1), (77, 1), (153, 1), (229, 1),
@@ -207,16 +208,13 @@ class Skill3:
 
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
-        laser_atk = self.player.atk
-
-        lw, lh = 200, 100
         if userdata.playerWeapon['gun'][1] == 5:
-            laser_atk *= 2.5  # 스킬3 공격력 증가
-            lw, lh = 225, 110
+            for k in range(2):
+                laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y + 200 - 400 * k, atk=self.player.atk * 2.5, w= 225, h= 110)
+                game_world.add_object(laser, 1)
+                game_world.add_collision_pair('bullet:monster', laser, None)
         elif userdata.playerWeapon['gun'][1] >= 2:
-            laser_atk *= 2.0  # 스킬3 공격력 증가
-        for k in range(2):
-            laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y + 200 - 400 * k, atk = laser_atk, w = lw, h = lh)
+            laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y, atk=self.player.atk * 2.0, w= 200, h= 100)
             game_world.add_object(laser, 1)
             game_world.add_collision_pair('bullet:monster', laser, None)
 
@@ -426,7 +424,7 @@ class PlayerG:
                         self.state_machine.handle_state_event(('SKILL2', event))
                     elif userdata.playerWeapon['gun'][0] == 2:
                         self.state_machine.handle_state_event(('SKILL3', event))
-                    self.weapon_time = 10.0  # 스킬 쿨타임 설정
+                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
