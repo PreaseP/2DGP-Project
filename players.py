@@ -23,6 +23,12 @@ def mouse_release(e):
 def event_stop(e):
     return e[0] == 'STOP'
 
+def event_skill2(e):
+    return e[0] == 'SKILL2'
+
+def event_skill3(e):
+    return e[0] == 'SKILL3'
+
 def event_run(e):
     return e[0] == 'RUN'
 
@@ -47,6 +53,21 @@ FRAMES_PER_ACTION = 8
 TIME_PER_ATTACK = 0.5
 ATTACK_PER_TIME = 1.0 / TIME_PER_ATTACK
 FRAMES_PER_ATTACK = 7
+
+# Player Slide Action Speed
+TIME_PER_SLIDE = 0.5
+SLIDE_PER_TIME = 1.0 / TIME_PER_SLIDE
+FRAMES_PER_SLIDE = 16
+
+# Player Skill2 Action Speed
+TIME_PER_SKILL2 = 0.5
+SKILL2_PER_TIME = 1.0 / TIME_PER_SKILL2
+FRAMES_PER_SKILL2 = 9
+
+# Player Skill3 Action Speed
+TIME_PER_SKILL3 = 0.5
+SKILL3_PER_TIME = 1.0 / TIME_PER_SKILL3
+FRAMES_PER_SKILL3 = 6
 
 class Idle:
 
@@ -81,6 +102,7 @@ class Run:
         self.player = player
 
     def enter(self, e):
+        self.player.frame = 0
         # 키 입력에 따라 방향 설정
         if self.player.xdir != 0:
             self.player.face_dir = self.player.xdir
@@ -183,6 +205,45 @@ class Attack:
                                                    attack_sprites[int(self.player.frame)][2], 31, 0, 'h',
                                                    self.player.x - 30, self.player.y + 15, 150, 100)
 
+skill2_sprites = (
+    0, 54, 109, 164, 219, 274, 329, 384, 439
+)
+
+class Skill2:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, e):
+        self.player.frame = 0  # 공격 프레임 초기화
+
+        if userdata.playerWeapon['sword'][1] == 5:
+            pass
+        elif userdata.playerWeapon['sword'][1] >= 2:
+            pass
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        # 공격 애니메이션 프레임 업데이트
+        self.player.frame = (self.player.frame + FRAMES_PER_SKILL2 * SKILL2_PER_TIME * game_framework.frame_time)
+        # 공격 애니메이션이 끝나면 상태 전환
+
+        if self.player.frame >= FRAMES_PER_SKILL2:
+            self.player.frame = 0
+            if self.player.xdir == 0 and self.player.ydir == 0:
+                self.player.state_machine.cur_state = self.player.IDLE
+            else:
+                self.player.state_machine.cur_state = self.player.RUN
+
+    def draw(self):
+        if self.player.face_dir == 1:  # right
+            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)], 0,
+                                                    53, 52, 0, ' ', self.player.x - 15, self.player.y, 160, 140)
+        else:  # face_dir == -1: # left
+            self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)], 0,
+                                                    53, 52, 0, 'h', self.player.x + 15, self.player.y, 160, 140)
+
 class PlayerS:
     def __init__(self):
 
@@ -193,6 +254,7 @@ class PlayerS:
         self.ydir = 0
         self.image = load_image('resources/sprites/sword_move.png')
         self.attack = load_image('resources/sprites/sword_attack.png')
+        self.skill2_image = load_image('resources/sprites/sword_skill2_set.png')
         self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.attacking = False
         self.atk = ((userdata.weaponAtk[userdata.playerWeapon['sword'][0]] + userdata.weaponAtk[
@@ -210,16 +272,18 @@ class PlayerS:
         self.IDLE = Idle(self)
         self.RUN = Run(self)
         self.ATTACK = Attack(self)  # Attack 상태 인스턴스 생성
+        self.SKILL2 = Skill2(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
                 self.IDLE: {event_run: self.RUN,
-                            event_attack: self.ATTACK},
+                            event_attack: self.ATTACK, event_skill2: self.SKILL2},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
                 self.RUN: {event_stop: self.IDLE,
-                           event_attack: self.ATTACK},
-                self.ATTACK: {}
+                           event_attack: self.ATTACK, event_skill2: self.SKILL2},
+                self.ATTACK: {},
+                self.SKILL2: {},
             }
         )
 
@@ -269,7 +333,7 @@ class PlayerS:
                     if userdata.playerWeapon['sword'][0] == 0:
                         self.skill1()
                     elif userdata.playerWeapon['sword'][0] == 1:
-                        pass
+                        self.state_machine.handle_state_event(('SKILL2', event))
                     elif userdata.playerWeapon['sword'][0] == 2:
                         pass
                     self.weapon_time = 1.0  # 스킬 쿨타임 설정
