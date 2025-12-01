@@ -9,7 +9,8 @@ import userdata
 
 from state_machine import StateMachine
 from sword_effect import SwordEffect
-
+from whirlwind import Whirlwind
+from sword_laser import sLaser
 
 def space_down(e): # e is space down ?
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
@@ -217,9 +218,17 @@ class Skill2:
         self.player.frame = 0  # 공격 프레임 초기화
 
         if userdata.playerWeapon['sword'][1] == 5:
-            pass
+            whirlwind = Whirlwind(self.player.atk * 2.5)
+            game_world.add_object(whirlwind, 1)
+            game_world.add_collision_pair('nonBullet:monster', whirlwind, None)
+            laser = sLaser(self.player.x, self.player.y, self.player.x + self.player.face_dir * 1280, self.player.y, atk=self.player.atk * 1.75, w=150, h=100)
+            game_world.add_object(laser, 1)
+            game_world.add_collision_pair('bullet:monster', laser, None)
+
         elif userdata.playerWeapon['sword'][1] >= 2:
-            pass
+            whirlwind = Whirlwind(self.player.atk * 1.75)
+            game_world.add_object(whirlwind, 1)
+            game_world.add_collision_pair('nonBullet:monster', whirlwind, None)
 
     def exit(self, e):
         pass
@@ -227,6 +236,8 @@ class Skill2:
     def do(self):
         # 공격 애니메이션 프레임 업데이트
         self.player.frame = (self.player.frame + FRAMES_PER_SKILL2 * SKILL2_PER_TIME * game_framework.frame_time)
+        self.player.x += self.player.xdir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
+        self.player.y += self.player.ydir * RUN_SPEED_PPS * game_framework.frame_time * self.player.speed
         # 공격 애니메이션이 끝나면 상태 전환
 
         if self.player.frame >= FRAMES_PER_SKILL2:
