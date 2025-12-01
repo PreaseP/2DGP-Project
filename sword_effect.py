@@ -23,6 +23,7 @@ class SwordEffect:
         self.atk = atk
         self.w = 75
         self.h = 75
+        self.atk_available = True
 
     def draw(self):
         if self.xdir == 0:
@@ -53,6 +54,9 @@ class SwordEffect:
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ATTACK * ATTACK_PER_TIME * game_framework.frame_time)
+        if self.atk_available and self.frame >= 1.0:
+            self.atk_available = False
+
         if self.frame >= FRAMES_PER_ATTACK:
             game_world.remove_object(self)
 
