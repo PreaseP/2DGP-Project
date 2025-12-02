@@ -8,8 +8,6 @@ ATTACK_PER_TIME = 1.0 / TIME_PER_ATTACK
 FRAMES_PER_ATTACK = 9
 
 class Whirlwind:
-    image = None
-
     def __init__(self, atk = 10):
         self.x = common.player.x
         self.y = common.player.y
