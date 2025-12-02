@@ -11,6 +11,8 @@ from state_machine import StateMachine
 from sword_effect import SwordEffect
 from whirlwind import Whirlwind
 from sword_laser import sLaser
+from slam import Slam
+from clone import sClone
 
 def space_down(e): # e is space down ?
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
@@ -68,7 +70,7 @@ FRAMES_PER_SKILL2 = 9
 # Player Skill3 Action Speed
 TIME_PER_SKILL3 = 0.5
 SKILL3_PER_TIME = 1.0 / TIME_PER_SKILL3
-FRAMES_PER_SKILL3 = 6
+FRAMES_PER_SKILL3 = 11
 
 class Idle:
 
@@ -255,6 +257,57 @@ class Skill2:
             self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)], 0,
                                                     53, 52, 0, 'h', self.player.x + 15, self.player.y, 160, 140)
 
+skill3_sprites = [
+    (0, 60), (158, 60), (316, 60), (474, 60), (632, 60), (790, 60), (948, 60),
+    (0, 0), (158, 0), (316, 0), (474, 0)
+]
+
+class Skill3:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, e):
+        self.player.frame = 0  # 공격 프레임 초기화
+        self.player.protect = True
+        if userdata.playerWeapon['sword'][1] == 5:
+            slam = Slam(self.player.atk * 3.5)
+            game_world.add_object(slam, 1)
+            game_world.add_collision_pair('nonBullet:monster', slam, None)
+        elif userdata.playerWeapon['sword'][1] >= 2:
+            slam = Slam(self.player.atk * 2.75)
+            game_world.add_object(slam, 1)
+            game_world.add_collision_pair('nonBullet:monster', slam, None)
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        # 공격 애니메이션 프레임 업데이트
+        self.player.frame = (self.player.frame + FRAMES_PER_SKILL3 * SKILL3_PER_TIME * game_framework.frame_time)
+        # 공격 애니메이션이 끝나면 상태 전환
+
+        if self.player.frame >= FRAMES_PER_SKILL3:
+            self.player.protect = False
+            self.player.frame = 0
+            if userdata.playerWeapon['sword'][1] == 5:
+                for i in range(120, -120, -50):
+                    clone = sClone(self.player.x + self.player.face_dir * 50, self.player.y + i, self.player.x + self.player.face_dir * 1280, self.player.y + i, atk=self.player.atk * 2.5)
+                    game_world.add_object(clone, 1)
+                    game_world.add_collision_pair('bullet:monster', clone, None)
+
+            if self.player.xdir == 0 and self.player.ydir == 0:
+                self.player.state_machine.cur_state = self.player.IDLE
+            else:
+                self.player.state_machine.cur_state = self.player.RUN
+
+    def draw(self):
+        if self.player.face_dir == 1:  # right
+            self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
+                                                   157, 59, 0, ' ', self.player.x + 5, self.player.y + 55, 400, 210)
+        else:  # face_dir == -1: # left
+            self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
+                                                   157, 59, 0, 'h', self.player.x - 5, self.player.y + 55, 400, 210)
+
 class PlayerS:
     def __init__(self):
 
@@ -266,6 +319,7 @@ class PlayerS:
         self.image = load_image('resources/sprites/sword_move.png')
         self.attack = load_image('resources/sprites/sword_attack.png')
         self.skill2_image = load_image('resources/sprites/sword_skill2_set.png')
+        self.skill3_image = load_image('resources/sprites/sword_skill3_set.png')
         self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.attacking = False
         self.atk = ((userdata.weaponAtk[userdata.playerWeapon['sword'][0]] + userdata.weaponAtk[
@@ -284,17 +338,19 @@ class PlayerS:
         self.RUN = Run(self)
         self.ATTACK = Attack(self)  # Attack 상태 인스턴스 생성
         self.SKILL2 = Skill2(self)
+        self.SKILL3 = Skill3(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
                 self.IDLE: {event_run: self.RUN,
-                            event_attack: self.ATTACK, event_skill2: self.SKILL2},
+                            event_attack: self.ATTACK, event_skill2: self.SKILL2, event_skill3: self.SKILL3},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
                 self.RUN: {event_stop: self.IDLE,
-                           event_attack: self.ATTACK, event_skill2: self.SKILL2},
+                           event_attack: self.ATTACK, event_skill2: self.SKILL2, event_skill3: self.SKILL3},
                 self.ATTACK: {},
                 self.SKILL2: {},
+                self.SKILL3: {}
             }
         )
 
@@ -346,7 +402,7 @@ class PlayerS:
                     elif userdata.playerWeapon['sword'][0] == 1:
                         self.state_machine.handle_state_event(('SKILL2', event))
                     elif userdata.playerWeapon['sword'][0] == 2:
-                        pass
+                        self.state_machine.handle_state_event(('SKILL3', event))
                     self.weapon_time = 1.0  # 스킬 쿨타임 설정
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
