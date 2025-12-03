@@ -60,10 +60,13 @@ class Bullet:
 
     def handle_collision(self, group, other):
         if group == 'bullet:monster':
-            if self.heal and common.player.hp < userdata.maxHealth:
-                common.player.hp += random.choice([1, 2])
-                if common.player.hp > userdata.maxHealth:
-                    common.player.hp = userdata.maxHealth
+            if self.heal:
+                if common.player.hp < userdata.maxHealth:
+                    common.player.hp += 1
+                    if common.player.hp > userdata.maxHealth:
+                        common.player.hp = userdata.maxHealth
+                if common.player.slide_time > 0.0:
+                    common.player.slide_time -= 1.0
             if self.piercing:
                 pass
             else:

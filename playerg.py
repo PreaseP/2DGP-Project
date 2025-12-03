@@ -368,6 +368,10 @@ class PlayerG:
             heal = False
             if self.slide is True and userdata.playerSkill['gun'][1] == 2:
                 heal = True
+                for i in range (100, -101, -200):
+                    b = Bullet(self.x, self.y, self.last_mouse_x + i * self.face_dir, self.last_mouse_y + i, atk=self.atk, heal=heal)
+                    game_world.add_object(b, 1)
+                    game_world.add_collision_pair('bullet:monster', b, None)
             b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y, atk=self.atk, heal=heal)
             game_world.add_object(b, 1)
             game_world.add_collision_pair('bullet:monster', b, None)
