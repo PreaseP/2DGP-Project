@@ -1,6 +1,6 @@
 from pico2d import load_image, get_time, load_font, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
-    SDL_BUTTON_RIGHT
+    SDL_BUTTON_RIGHT, SDLK_LSHIFT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 
 import game_world
@@ -13,6 +13,7 @@ from whirlwind import Whirlwind
 from sword_laser import sLaser
 from slam import Slam
 from clone import sClone
+from sword_dash import DashEffect
 
 def space_down(e): # e is space down ?
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
@@ -31,6 +32,9 @@ def event_skill2(e):
 
 def event_skill3(e):
     return e[0] == 'SKILL3'
+
+def event_dash(e):
+    return e[0] == 'DASH'
 
 def event_run(e):
     return e[0] == 'RUN'
@@ -57,10 +61,11 @@ TIME_PER_ATTACK = 0.5
 ATTACK_PER_TIME = 1.0 / TIME_PER_ATTACK
 FRAMES_PER_ATTACK = 7
 
-# Player Slide Action Speed
-TIME_PER_SLIDE = 0.5
-SLIDE_PER_TIME = 1.0 / TIME_PER_SLIDE
-FRAMES_PER_SLIDE = 16
+# Player Dash Action Speed
+DASH_AMOUNT = 7.0 * PIXEL_PER_METER
+TIME_PER_DASH = 0.5
+DASH_PER_TIME = 1.0 / TIME_PER_DASH
+FRAMES_PER_DASH = 8
 
 # Player Skill2 Action Speed
 TIME_PER_SKILL2 = 0.5
@@ -308,6 +313,47 @@ class Skill3:
             self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
                                                    157, 59, 0, 'h', self.player.x - 5, self.player.y + 55, 400, 210)
 
+dash_sprites = [ 0, 67, 134, 201, 268, 335, 402, 469 ]
+
+class Dash:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, e):
+        # 키 입력에 따라 방향 설정
+        self.player.frame = 0.0
+        self.player.protect = True
+        self.player.x += self.player.face_dir * DASH_AMOUNT
+
+        if self.player.xdir != 0:
+            self.player.face_dir = self.player.xdir
+
+        dash_attack = DashEffect(self.player.atk * 1.5)
+        game_world.add_object(dash_attack, 1)
+        game_world.add_collision_pair('nonBullet:monster', dash_attack, None)
+
+    def exit(self, e):
+        pass
+
+    def do(self):
+        self.player.frame = (self.player.frame + FRAMES_PER_DASH * DASH_PER_TIME * game_framework.frame_time)
+
+        if self.player.frame >= FRAMES_PER_DASH:
+            self.player.frame = 0.0
+            self.player.protect = False
+            if self.player.xdir == 0 and self.player.ydir == 0:
+                self.player.state_machine.cur_state = self.player.IDLE
+            else:
+                self.player.state_machine.cur_state = self.player.RUN
+
+    def draw(self):
+        if self.player.face_dir == 1:  # right
+            self.player.dash_image.clip_composite_draw(dash_sprites[int(self.player.frame)], 0, 66, 23,
+                                                  0, ' ', self.player.x - 30, self.player.y, 170, 75)
+        else:  # face_dir == -1: # left
+            self.player.dash_image.clip_composite_draw(dash_sprites[int(self.player.frame)], 0, 66, 23,
+                                                  0, 'h', self.player.x + 30, self.player.y, 170, 75)
+
 class PlayerS:
     def __init__(self):
 
@@ -321,6 +367,7 @@ class PlayerS:
         self.skill2_image = load_image('resources/sprites/sword_skill2_set.png')
         self.skill3_image = load_image('resources/sprites/sword_skill3_set.png')
         self.font = load_font('resources/DungGeunMo.TTF', 20)
+        self.dash_image = load_image('resources/sprites/sword_dash.png')
         self.attacking = False
         self.atk = ((userdata.weaponAtk[userdata.playerWeapon['sword'][0]] + userdata.weaponAtk[
             userdata.playerWeapon['sword'][0]]
@@ -330,6 +377,8 @@ class PlayerS:
         self.speed = 1.0 + 0.1 * (userdata.playerSkill['general'][2])
 
         self.weapon_time = 0.0
+        self.dash_time = 0.0
+
         self.skill1_cnt = 0
         self.protect_timer = 0.0
         self.protect = False
@@ -339,18 +388,20 @@ class PlayerS:
         self.ATTACK = Attack(self)  # Attack 상태 인스턴스 생성
         self.SKILL2 = Skill2(self)
         self.SKILL3 = Skill3(self)
+        self.DASH = Dash(self)
         self.state_machine = StateMachine(
             self.IDLE,
             {
                 # 이동 키가 눌리면 RUN 상태로 진입
                 self.IDLE: {event_run: self.RUN,
-                            event_attack: self.ATTACK, event_skill2: self.SKILL2, event_skill3: self.SKILL3},
+                            event_attack: self.ATTACK, event_skill2: self.SKILL2, event_skill3: self.SKILL3, event_dash: self.DASH},
                 # RUN 상태에서 키가 눌리거나 떼어져도 RUN 상태를 유지
                 self.RUN: {event_stop: self.IDLE,
-                           event_attack: self.ATTACK, event_skill2: self.SKILL2, event_skill3: self.SKILL3},
+                           event_attack: self.ATTACK, event_skill2: self.SKILL2, event_skill3: self.SKILL3, event_dash: self.DASH},
                 self.ATTACK: {},
                 self.SKILL2: {},
-                self.SKILL3: {}
+                self.SKILL3: {},
+                self.DASH: {}
             }
         )
 
@@ -362,6 +413,11 @@ class PlayerS:
             if self.weapon_time < 0.0:
                 self.weapon_time = 0.0
 
+        if self.dash_time > 0.0:
+            self.dash_time -= game_framework.frame_time
+            if self.dash_time < 0.0:
+                self.dash_time = 0.0
+
         if self.protect_timer > 0.0:
             self.protect_timer -= game_framework.frame_time
             if self.protect_timer < 0.0:
@@ -369,7 +425,7 @@ class PlayerS:
                 self.protect = False
 
     def handle_event(self, event):
-        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP):
+        if event.key in (SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LSHIFT) or event.type in (SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP):
             cur_xdir, cur_ydir = self.xdir, self.ydir
             if event.type == SDL_KEYDOWN:
                 if event.key == SDLK_a:
@@ -380,6 +436,10 @@ class PlayerS:
                     self.ydir += 1
                 elif event.key == SDLK_s:
                     self.ydir -= 1
+                elif event.key == SDLK_LSHIFT:
+                    if userdata.playerSkill['sword'][1] >= 1 and self.dash_time <= 0.0:
+                        self.state_machine.handle_state_event(('DASH', None))
+                        self.dash_time = 6.0
             elif event.type == SDL_KEYUP:
                 if event.key == SDLK_a:
                     self.xdir += 1
@@ -421,6 +481,8 @@ class PlayerS:
         draw_rectangle(*self.get_bb())
         if self.weapon_time > 0.0:
             self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
+        if self.dash_time > 0.0:
+            self.font.draw(480, 80, f'slide skill cooldown: {self.dash_time:.1f}s', (255, 255, 0))
 
     def get_bb(self):
         return self.x - 30, self.y - 40, self.x + 30, self.y + 40
