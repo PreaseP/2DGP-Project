@@ -2,12 +2,14 @@ from pico2d import *
 
 import farming_stage
 import game_framework
+import game_world
 import lab_mode
 import armory_mode
 import stage1
 import userdata
 from button import Button
 from game_framework import change_mode
+from info_font import InfoFont
 
 buttonList = []
 
@@ -38,8 +40,12 @@ def handle_events():
             game_framework.change_mode(armory_mode)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_s:
             userdata.save_userdata()
+            info = InfoFont(1280 - 220, 50, '저장 성공')
+            game_world.add_object(info)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_l:
             userdata.load_userdata()
+            info = InfoFont(1280 - 280, 50, '불러오기 성공')
+            game_world.add_object(info)
         # 마우스 버튼 처리
         elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
             mx = event.x
@@ -73,7 +79,7 @@ def init():
     stage_star = load_image('resources/background/stage' + str(userdata.stageClear + 1) + '_star.png')
 
 def update():
-    pass
+    game_world.update()
 
 def draw():
     clear_canvas()
@@ -98,6 +104,7 @@ def draw():
     else:
         gun.clip_draw(0, 0, 24, 24, 45, 45, 75, 75)
 
+    game_world.render()
     update_canvas()
 
 
