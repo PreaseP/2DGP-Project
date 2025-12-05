@@ -10,7 +10,7 @@ from button import Button
 buttonList = []
 
 # 버튼 위치/크기 (화면 중앙)
-farmingButton = Button(640 - 175, 160 - 40, 640 + 175, 160 + 40, 'farming')  # left, bottom, right, top, button_type
+farmingButton = Button(640 - 60, 160 - 60, 640 + 60, 160 + 60, 'farming')  # left, bottom, right, top, button_type
 armorChoiceButton = Button(45 - 35, 45 - 35, 45 + 35, 45 + 35, 'armor_choice')
 
 buttonList.append(farmingButton)
@@ -18,8 +18,8 @@ buttonList.append(armorChoiceButton)
 
 FARMING_CENTER_X = 640
 FARMING_CENTER_Y = 160
-FARMING_W = 350
-FARMING_H = 80
+FARMING_W = 200
+FARMING_H = 200
 
 def handle_events():
     event_list = get_events()
@@ -56,11 +56,13 @@ def handle_events():
                 game_framework.change_mode(armory_mode)
 
 def init():
-    global image, font, sword, gun
+    global image, font, popup, sword, gun, farming_star
     image = load_image('resources/background/cockpit.png')
     font = load_font('resources/DungGeunMo.TTF', 50)
+    popup = load_image('resources/background/ship_popup.png')
     sword = load_image('resources/sprites/sword_icon.png')
     gun = load_image('resources/sprites/gun_icon.png')
+    farming_star = load_image('resources/background/farming_stage.png')
 
 def update():
     pass
@@ -68,9 +70,11 @@ def update():
 def draw():
     clear_canvas()
     image.draw(640, 360, 1280, 720)
-    buttonList[0].fill_draw()
+    popup.draw(640, 360, 1120, 660)
 
-    font.draw(FARMING_CENTER_X - 160, FARMING_CENTER_Y, 'Farming Stage', (0, 0, 0))
+    farming_star.clip_draw(0, 0, farming_star.w, farming_star.h, FARMING_CENTER_X, FARMING_CENTER_Y, FARMING_W, FARMING_H)
+
+    font.draw(FARMING_CENTER_X - 90, FARMING_CENTER_Y - 100, '파밍 맵', (255, 255, 255))
     if userdata.playerType == 'S':
         sword.clip_draw(0, 0, 24, 24, 45, 45, 75, 75)
     else:
