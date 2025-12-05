@@ -4,6 +4,7 @@ from pico2d import *
 import game_world
 import game_framework
 import userdata
+import common
 
 PIXEL_PER_METER = (1.0 / 0.03)  # 1pixel = 3cm, 1m = 33.33 pixel
 
@@ -33,20 +34,25 @@ class Laser:
         self.y += self.vy * dt * PIXEL_PER_METER
 
         # 화면 밖으로 나가면 삭제
-        if self.x < -50 or self.x > get_canvas_width() + 50 or self.y < -50 or self.y > get_canvas_height() + 50:
+        if self.x < -50 or self.x > common.map.w + 50 or self.y < -50 or self.y > common.map.h + 50:
             try:
                 game_world.remove_object(self)
             except Exception:
                 pass
 
     def draw(self):
-        self.image.draw(self.x, self.y, self.w, self.h)
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
 
-        draw_rectangle(self.x - self.w/2, self.y - self.h/2,
-                       self.x + self.w/2, self.y + self.h/2)
+        self.image.draw(sx, sy, self.w, self.h)
+
+        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w/2, self.y - self.h/2, self.x + self.w/2, self.y + self.h/2
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
+        return sx - self.w/2, sy - self.h/2, sx + self.w/2, sy + self.h/2
 
     def handle_collision(self, group, other):
         pass

@@ -54,28 +54,34 @@ class sClone:
             game_world.remove_object(self)
 
     def draw(self):
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
         if 1.5 <= self.frame < 2.0:
             if self.face_dir == 1:  # right
                 sClone.image.clip_composite_draw(sprite[int(self.frame)] + 31, 0,
-                                                 47, 44, 0, ' ', self.x + 25, self.y, self.w - 50, self.h)
+                                                 47, 44, 0, ' ', sx + 25, sy, self.w - 50, self.h)
             else:  # face_dir == -1: # left
                 sClone.image.clip_composite_draw(sprite[int(self.frame)] + 31, 0,
-                                                 47, 44, 0, 'h', self.x - 25, self.y, self.w - 50, self.h)
+                                                 47, 44, 0, 'h', sx - 25, sy, self.w - 50, self.h)
         else:
             if self.face_dir == 1:  # right
                 sClone.image.clip_composite_draw(sprite[int(self.frame)], 0,
-                                                             78, 44, 0, ' ', self.x, self.y, self.w, self.h)
+                                                             78, 44, 0, ' ', sx, sy, self.w, self.h)
             else:  # face_dir == -1: # left
                 sClone.image.clip_composite_draw(sprite[int(self.frame)], 0,
-                                                             78, 44, 0, 'h', self.x, self.y, self.w, self.h)
+                                                             78, 44, 0, 'h', sx, sy, self.w, self.h)
 
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
         if self.face_dir == 1:  # right
-            return self.x - self.w/2 + 50, self.y - self.h/2 + 10, self.x + self.w/2 + 5, self.y + self.h/2 - 25
+            return sx - self.w/2 + 50, sy - self.h/2 + 10, sx + self.w/2 + 5, sy + self.h/2 - 25
         else:  # face_dir == -1: # left
-            return self.x - self.w/2 - 5, self.y - self.h/2 + 10, self.x + self.w/2 - 50, self.y + self.h/2 - 25
+            return sx - self.w/2 - 5, sy - self.h/2 + 10, sx + self.w/2 - 50, sy + self.h/2 - 25
 
     def handle_collision(self, group, other):
         pass

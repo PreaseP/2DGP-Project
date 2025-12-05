@@ -50,13 +50,18 @@ class Bullet:
                 pass
 
     def draw(self):
-        self.image.draw(self.x, self.y, 25, 25)
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
 
-        draw_rectangle(self.x - self.w/2, self.y - self.h/2,
-                       self.x + self.w/2, self.y + self.h/2)
+        self.image.draw(sx, sy, 25, 25)
+
+        draw_rectangle(*(self.get_bb()))
 
     def get_bb(self):
-        return self.x - self.w/2, self.y - self.h/2, self.x + self.w/2, self.y + self.h/2
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
+        return sx - self.w/2, sy - self.h/2, sx + self.w/2, sy + self.h/2
 
     def handle_collision(self, group, other):
         if group == 'bullet:monster':

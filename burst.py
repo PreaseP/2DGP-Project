@@ -4,6 +4,7 @@ from pico2d import *
 import game_world
 import game_framework
 import userdata
+import common
 
 PIXEL_PER_METER = (1.0 / 0.03)  # 1pixel = 3cm, 1m = 33.33 pixel
 
@@ -44,20 +45,26 @@ class Burst:
             game_world.remove_object(self)
 
     def draw(self):
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
         if self.xdir == 0:
             if self.face_dir == 1:  # right
-                self.image.clip_composite_draw(effect_sprites[int(self.frame)], 0, 52, 33, 0, ' ', self.x, self.y, self.w, self.h)
+                self.image.clip_composite_draw(effect_sprites[int(self.frame)], 0, 52, 33, 0, ' ', sx, sy, self.w, self.h)
             else:
-                self.image.clip_composite_draw(effect_sprites[int(self.frame)], 0, 52, 33, 0, 'h', self.x, self.y, self.w, self.h)
+                self.image.clip_composite_draw(effect_sprites[int(self.frame)], 0, 52, 33, 0, 'h', sx, sy, self.w, self.h)
         elif self.xdir == 1:
-            self.image.clip_composite_draw(effect_sprites[int(self.frame)], 0, 52, 33, 0, ' ', self.x, self.y, self.w, self.h)
+            self.image.clip_composite_draw(effect_sprites[int(self.frame)], 0, 52, 33, 0, ' ', sx, sy, self.w, self.h)
         else:
-            self.image.clip_composite_draw(effect_sprites[int(self.frame)], 0, 52, 33, 0, 'h',  self.x, self.y, self.w, self.h)
+            self.image.clip_composite_draw(effect_sprites[int(self.frame)], 0, 52, 33, 0, 'h',  sx, sy, self.w, self.h)
 
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w/2, self.y - self.h/2, self.x + self.w/2, self.y + self.h/2
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
+        return sx - self.w/2, sy - self.h/2, sx + self.w/2, sy + self.h/2
 
     def handle_collision(self, group, other):
         pass

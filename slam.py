@@ -22,7 +22,10 @@ class Slam:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - self.w/2 + 30 * self.face_dir, self.y - self.h/2 + 60, self.x + self.w/2 + 30 * self.face_dir, self.y + self.h/2 + 50
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
+        return sx - self.w/2 + 30 * self.face_dir, sy - self.h/2 + 60, sx + self.w/2 + 30 * self.face_dir, sy + self.h/2 + 50
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ATTACK * ATTACK_PER_TIME * game_framework.frame_time)
