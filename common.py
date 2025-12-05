@@ -1,1 +1,3 @@
 player = None
+
+map = None
