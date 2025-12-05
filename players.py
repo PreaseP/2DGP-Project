@@ -429,9 +429,6 @@ class PlayerS:
     def update(self):
         self.state_machine.update()
 
-        self.x = clamp(50, self.x, common.map.w - 50)
-        self.y = clamp(50, self.y, common.map.h - 50)
-
         if self.weapon_time > 0.0:
             self.weapon_time -= game_framework.frame_time
             if self.weapon_time < 0.0:
@@ -509,7 +506,10 @@ class PlayerS:
             self.font.draw(480, 80, f'slide skill cooldown: {self.dash_time:.1f}s', (255, 255, 0))
 
     def get_bb(self):
-        return self.x - 30, self.y - 40, self.x + 30, self.y + 40
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
+        return sx - 30, sy - 40, sx + 30, sy + 40
 
     def handle_collision(self, group, other):
         if group == 'player:monster' and self.protect == False:

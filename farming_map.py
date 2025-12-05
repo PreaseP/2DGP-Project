@@ -6,19 +6,15 @@ class FarmingMap:
         self.image = load_image('resources/background/farming.png')
         self.cw = get_canvas_width()
         self.ch = get_canvas_height()
-        # fiil here
         self.w = self.image.w
         self.h = self.image.h
 
     def update(self):
-        # fill here
-        
-        # 클리핑 영역을 계산
-        # 클리핑 영역의 왼쪽 아래 좌표를 계산.
-        # 소년의 x 위치 - cw/2
         self.window_left = clamp(0, int(common.player.x) - self.cw // 2, self.w - self.cw - 1)
         self.window_bottom = clamp(0, int(common.player.y) - self.ch // 2, self.h - self.ch - 1)
-        pass
+
+        common.player.x = clamp(50, common.player.x, common.map.w - 50)
+        common.player.y = clamp(50, common.player.y, common.map.h - 50)
 
     def draw(self):
         self.image.clip_draw_to_origin(

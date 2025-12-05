@@ -363,9 +363,6 @@ class PlayerG:
     def update(self):
         self.state_machine.update()
 
-        self.x = clamp(50, self.x, common.map.w - 50)
-        self.y = clamp(50, self.y, common.map.h - 50)
-
         # 발사 쿨타임 감소 및 연속 발사 처리
         dt = game_framework.frame_time
         if self.fire_cooldown > 0.0:
