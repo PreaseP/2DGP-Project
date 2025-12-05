@@ -6,8 +6,6 @@ import game_framework
 import userdata
 
 PIXEL_PER_METER = (1.0 / 0.03)  # 1pixel = 3cm, 1m = 33.33 pixel
-SCREEN_W = 1280
-SCREEN_H = 720
 
 class sLaser:
     image = None
@@ -35,7 +33,7 @@ class sLaser:
         self.y += self.vy * dt * PIXEL_PER_METER
 
         # 화면 밖으로 나가면 삭제
-        if self.x < -50 or self.x > SCREEN_W + 50 or self.y < -50 or self.y > SCREEN_H + 50:
+        if self.x < -50 or self.x > get_canvas_width() + 50 or self.y < -50 or self.y > get_canvas_height() + 50:
             try:
                 game_world.remove_object(self)
             except Exception:
