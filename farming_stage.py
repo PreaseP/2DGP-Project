@@ -2,6 +2,7 @@ import random
 from pico2d import *
 
 import cockpit_mode
+from farming_map import FarmingMap
 from players import PlayerS
 from playerg import PlayerG
 from slime import Slime
@@ -24,8 +25,8 @@ def handle_events():
             common.player.handle_event(event)
 
 def init():
-    global map
-    map = load_image('resources/background/farming.png')
+    common.map = FarmingMap()
+    game_world.add_object(common.map, 0)
 
     global spawn_timer
     spawn_timer = 5.0
@@ -65,7 +66,6 @@ def update():
 
 def draw():
     clear_canvas()
-    map.draw(640, 360, 1280, 720)
     game_world.render()
     userdata.show_status(common.player.hp)
     update_canvas()
