@@ -150,5 +150,5 @@ class Slime:
             if self.hp <= 0:
                 game_world.remove_object(self)
                 userdata.add_exp(50)
-                userdata.add_gold(10)
+                userdata.add_gold(50)
 
