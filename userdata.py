@@ -22,6 +22,8 @@ weaponUp = [0, 0.1, 0.3, 0.4, 0.5, 0.7] # 무기 강화별 추가 계수
 makeCost = 100 # 무기 연성 비용
 upgradeCost = [50, 100, 200, 400, 800] # 무기 강화 비용
 
+stageClear = 0
+
 def make_weapon(weapon_type):
     import random
     global playerWeapon
@@ -102,14 +104,15 @@ def save_userdata():
         'playerGold': playerGold,
         'playerSkillPoint': playerSkillPoint,
         'playerWeapon': playerWeapon,
-        'playerSkill': playerSkill
+        'playerSkill': playerSkill,
+        'stageClear': stageClear
     }
     with open('save.json', 'w') as f:
         json.dump(data, f)
 
 def load_userdata():
     import json
-    global playerLevel, playerType, playerGold, playerSkillPoint, playerWeapon, playerSkill
+    global playerLevel, playerType, playerGold, playerSkillPoint, playerWeapon, playerSkill, stageClear
     try:
         with open('save.json', 'r') as f:
             data = json.load(f)
@@ -119,5 +122,6 @@ def load_userdata():
             playerSkillPoint = data['playerSkillPoint']
             playerWeapon = data['playerWeapon']
             playerSkill = data['playerSkill']
+            stageClear = data['stageClear']
     except FileNotFoundError:
         pass
