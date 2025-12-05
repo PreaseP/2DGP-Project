@@ -42,7 +42,7 @@ class Bullet:
         self.y += self.vy * dt * PIXEL_PER_METER
 
         # 화면 밖으로 나가면 삭제
-        if self.x < -50 or self.x > get_canvas_width() + 50 or self.y < -50 or self.y > get_canvas_height() + 50:
+        if self.x < -50 or self.x > common.map.w + 50 or self.y < -50 or self.y > common.map.h + 50:
             try:
                 game_world.remove_object(self)
                 game_world.remove_collision_object(self)
