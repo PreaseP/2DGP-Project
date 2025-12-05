@@ -1,6 +1,7 @@
 from pico2d import *
 import game_world
 import game_framework
+import common
 
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 0.2  # Km / Hour
@@ -16,7 +17,10 @@ class DamageFont:
         self.print_timer = 0.6
         self.damage = damage
     def draw(self):
-        self.font.draw(self.x, self.y, f'{int(self.damage)}', (255,0,0))
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
+        self.font.draw(sx, sy, f'{int(self.damage)}', (255,0,0))
 
     def update(self):
         # 위치 업데이트
