@@ -4,16 +4,20 @@ import farming_stage
 import game_framework
 import lab_mode
 import armory_mode
+import stage1
 import userdata
 from button import Button
+from game_framework import change_mode
 
 buttonList = []
 
 # 버튼 위치/크기 (화면 중앙)
 farmingButton = Button(640 - 60, 160 - 60, 640 + 60, 160 + 60, 'farming')  # left, bottom, right, top, button_type
+stageButton = Button(640 - 100, 160 + 250, 640 + 100, 160 + 450, 'stage_select')
 armorChoiceButton = Button(45 - 35, 45 - 35, 45 + 35, 45 + 35, 'armor_choice')
 
 buttonList.append(farmingButton)
+buttonList.append(stageButton)
 buttonList.append(armorChoiceButton)
 
 FARMING_CENTER_X = 640
@@ -49,6 +53,9 @@ def handle_events():
                             userdata.playerType = 'G'
                         else:
                             userdata.playerType = 'S'
+                    elif button.button_type == 'stage_select':
+                        if userdata.stageClear == 0:
+                            change_mode(stage1)
         elif event.type == SDL_MOUSEWHEEL:
             if event.y >0:
                 game_framework.change_mode(lab_mode)
@@ -56,13 +63,14 @@ def handle_events():
                 game_framework.change_mode(armory_mode)
 
 def init():
-    global image, font, popup, sword, gun, farming_star
+    global image, font, popup, sword, gun, farming_star, stage_star
     image = load_image('resources/background/cockpit.png')
     font = load_font('resources/DungGeunMo.TTF', 50)
     popup = load_image('resources/background/ship_popup.png')
     sword = load_image('resources/sprites/sword_icon.png')
     gun = load_image('resources/sprites/gun_icon.png')
     farming_star = load_image('resources/background/farming_stage.png')
+    stage_star = load_image('resources/background/stage' + str(userdata.stageClear + 1) + '_star.png')
 
 def update():
     pass
@@ -75,6 +83,16 @@ def draw():
     farming_star.clip_draw(0, 0, farming_star.w, farming_star.h, FARMING_CENTER_X, FARMING_CENTER_Y, FARMING_W, FARMING_H)
 
     font.draw(FARMING_CENTER_X - 90, FARMING_CENTER_Y - 100, '파밍 맵', (255, 255, 255))
+
+    stage_star.clip_draw(0, 0, stage_star.w, stage_star.h, FARMING_CENTER_X, FARMING_CENTER_Y + 350, FARMING_W, FARMING_H)
+
+    if userdata.stageClear == 0:
+        font.draw(FARMING_CENTER_X - 120, FARMING_CENTER_Y + 200, '스테이지 1', (255, 255, 255))
+    elif userdata.stageClear == 1:
+        font.draw(FARMING_CENTER_X - 120, FARMING_CENTER_Y + 200, '스테이지 2', (255, 255, 255))
+    elif userdata.stageClear == 2:
+        font.draw(FARMING_CENTER_X - 150, FARMING_CENTER_Y + 200, '보스 스테이지', (255, 255, 255))
+
     if userdata.playerType == 'S':
         sword.clip_draw(0, 0, 24, 24, 45, 45, 75, 75)
     else:
