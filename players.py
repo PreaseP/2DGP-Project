@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, load_font, draw_rectangle
+from pico2d import load_image, load_font, draw_rectangle, get_canvas_width, get_canvas_height, clamp
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
     SDL_BUTTON_RIGHT, SDLK_LSHIFT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
@@ -6,6 +6,7 @@ from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
 import game_world
 import game_framework
 import userdata
+import common
 
 from state_machine import StateMachine
 from sword_effect import SwordEffect
@@ -93,12 +94,15 @@ class Idle:
         pass
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.face_dir == 1: # right
             self.player.image.clip_composite_draw(0, 35, 33, 22,
-                                            0, ' ', self.player.x + 15, self.player.y, 75, 75)
+                                            0, ' ', sx + 15, sy, 75, 75)
         else: # face_dir == -1: # left
             self.player.image.clip_composite_draw(0, 35, 33, 22,
-                                                  0, 'h', self.player.x - 15, self.player.y, 75, 75)
+                                                  0, 'h', sx - 15, sy, 75, 75)
 
 run_sprites = [
     (0, 0), (32, 0), (64, 0), (96, 0),
@@ -126,21 +130,24 @@ class Run:
             self.player.face_dir = self.player.xdir
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.xdir == 0:
             if self.player.face_dir == 1:  # right
                 self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
-                                                      0, ' ', self.player.x - 15, self.player.y, 75, 75)
+                                                      0, ' ', sx - 15, sy, 75, 75)
             else:  # face_dir == -1: # left
                 self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
-                                                      0, 'h', self.player.x + 15, self.player.y, 75, 75)
+                                                      0, 'h', sx + 15, sy, 75, 75)
         elif self.player.xdir == 1:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
                                                   run_sprites[int(self.player.frame)][1], 31, 22,
-                                                  0, ' ', self.player.x - 15, self.player.y, 75, 75)
+                                                  0, ' ', sx - 15, sy, 75, 75)
         else:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
                                                   run_sprites[int(self.player.frame)][1], 31, 22,
-                                                  0, 'h', self.player.x + 15, self.player.y, 75, 75)
+                                                  0, 'h', sx + 15, sy, 75, 75)
 
 attack_sprites = [
     (0, 0, 62), (63, 0, 62), (126, 0, 62), (189, 0, 62),
@@ -195,23 +202,26 @@ class Attack:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.xdir == 0:
             if self.player.face_dir == 1:  # right
                 self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
-                                                       attack_sprites[int(self.player.frame)][2], 31, 0, ' ', self.player.x + 30, self.player.y + 15, 150, 100)
+                                                       attack_sprites[int(self.player.frame)][2], 31, 0, ' ', sx + 30, sy + 15, 150, 100)
             else:  # face_dir == -1: # left
                 self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0], attack_sprites[int(self.player.frame)][1],
-                                                       attack_sprites[int(self.player.frame)][2], 31, 0, 'h', self.player.x - 30, self.player.y + 15, 150, 100)
+                                                       attack_sprites[int(self.player.frame)][2], 31, 0, 'h', sx - 30, sy + 15, 150, 100)
         elif self.player.xdir == 1:
             self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0],
                                                    attack_sprites[int(self.player.frame)][1],
                                                    attack_sprites[int(self.player.frame)][2], 31, 0, ' ',
-                                                   self.player.x + 30, self.player.y + 15, 150, 100)
+                                                   sx + 30, sy + 15, 150, 100)
         else:
             self.player.attack.clip_composite_draw(attack_sprites[int(self.player.frame)][0],
                                                    attack_sprites[int(self.player.frame)][1],
                                                    attack_sprites[int(self.player.frame)][2], 31, 0, 'h',
-                                                   self.player.x - 30, self.player.y + 15, 150, 100)
+                                                   sx - 30, sy + 15, 150, 100)
 
 skill2_sprites = (
     0, 54, 109, 164, 219, 274, 329, 384, 439
@@ -228,7 +238,7 @@ class Skill2:
             whirlwind = Whirlwind(self.player.atk * 2.5)
             game_world.add_object(whirlwind, 1)
             game_world.add_collision_pair('nonBullet:monster', whirlwind, None)
-            laser = sLaser(self.player.x, self.player.y, self.player.x + self.player.face_dir * 1280, self.player.y, atk=self.player.atk * 1.75, w=150, h=100)
+            laser = sLaser(self.player.x, self.player.y, self.player.x + self.player.face_dir * get_canvas_width(), self.player.y, atk=self.player.atk * 1.75, w=150, h=100)
             game_world.add_object(laser, 1)
             game_world.add_collision_pair('bullet:monster', laser, None)
 
@@ -255,12 +265,15 @@ class Skill2:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.face_dir == 1:  # right
             self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)], 0,
-                                                    53, 52, 0, ' ', self.player.x - 15, self.player.y, 160, 140)
+                                                    53, 52, 0, ' ', sx - 15, sy, 160, 140)
         else:  # face_dir == -1: # left
             self.player.skill2_image.clip_composite_draw(skill2_sprites[int(self.player.frame)], 0,
-                                                    53, 52, 0, 'h', self.player.x + 15, self.player.y, 160, 140)
+                                                    53, 52, 0, 'h', sx + 15, sy, 160, 140)
 
 skill3_sprites = [
     (0, 60), (158, 60), (316, 60), (474, 60), (632, 60), (790, 60), (948, 60),
@@ -296,7 +309,7 @@ class Skill3:
             self.player.frame = 0
             if userdata.playerWeapon['sword'][1] == 5:
                 for i in range(120, -120, -50):
-                    clone = sClone(self.player.x + self.player.face_dir * 50, self.player.y + i, self.player.x + self.player.face_dir * 1280, self.player.y + i, atk=self.player.atk * 2.5)
+                    clone = sClone(self.player.x + self.player.face_dir * 50, self.player.y + i, self.player.x + self.player.face_dir * get_canvas_width(), self.player.y + i, atk=self.player.atk * 2.5)
                     game_world.add_object(clone, 1)
                     game_world.add_collision_pair('bullet:monster', clone, None)
 
@@ -306,12 +319,15 @@ class Skill3:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.face_dir == 1:  # right
             self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
-                                                   157, 59, 0, ' ', self.player.x + 5, self.player.y + 55, 400, 210)
+                                                   157, 59, 0, ' ', sx + 5, sy + 55, 400, 210)
         else:  # face_dir == -1: # left
             self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
-                                                   157, 59, 0, 'h', self.player.x - 5, self.player.y + 55, 400, 210)
+                                                   157, 59, 0, 'h', sx - 5, sy + 55, 400, 210)
 
 dash_sprites = [ 0, 67, 134, 201, 268, 335, 402, 469 ]
 
@@ -347,17 +363,22 @@ class Dash:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.face_dir == 1:  # right
             self.player.dash_image.clip_composite_draw(dash_sprites[int(self.player.frame)], 0, 66, 23,
-                                                  0, ' ', self.player.x - 30, self.player.y, 170, 75)
+                                                  0, ' ', sx - 30, sy, 170, 75)
         else:  # face_dir == -1: # left
             self.player.dash_image.clip_composite_draw(dash_sprites[int(self.player.frame)], 0, 66, 23,
-                                                  0, 'h', self.player.x + 30, self.player.y, 170, 75)
+                                                  0, 'h', sx + 30, sy, 170, 75)
 
 class PlayerS:
     def __init__(self):
 
-        self.x, self.y = 640, 360
+        self.x = common.map.w / 2
+        self.y = common.map.h / 2
+
         self.frame = 0
         self.face_dir = 1
         self.xdir = 0
@@ -407,6 +428,9 @@ class PlayerS:
 
     def update(self):
         self.state_machine.update()
+
+        self.x = clamp(50, self.x, common.map.w - 50)
+        self.y = clamp(50, self.y, common.map.h - 50)
 
         if self.weapon_time > 0.0:
             self.weapon_time -= game_framework.frame_time
@@ -463,7 +487,7 @@ class PlayerS:
                         self.state_machine.handle_state_event(('SKILL2', event))
                     elif userdata.playerWeapon['sword'][0] == 2:
                         self.state_machine.handle_state_event(('SKILL3', event))
-                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
+                    self.weapon_time = 10.0  # 스킬 쿨타임 설정
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤

@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, load_font, draw_rectangle
+from pico2d import load_image, load_font, draw_rectangle, get_canvas_width, get_canvas_height, clamp
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
     SDL_MOUSEMOTION, SDL_BUTTON_RIGHT, SDLK_LSHIFT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
@@ -9,6 +9,7 @@ import userdata
 from bullet import Bullet
 from laser import Laser
 from burst import Burst
+import common
 
 from state_machine import StateMachine
 
@@ -87,12 +88,15 @@ class Idle:
         pass
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.face_dir == 1: # right
             self.player.image.clip_composite_draw(0, 41, 17, 50,
-                                            0, ' ', self.player.x + 15, self.player.y, 75, 75)
+                                            0, ' ', sx + 15, sy, 75, 75)
         else: # face_dir == -1: # left
             self.player.image.clip_composite_draw(0, 41, 17, 50,
-                                                  0, 'h', self.player.x - 15, self.player.y, 75, 75)
+                                                  0, 'h', sx - 15, sy, 75, 75)
 
 run_sprites = [
     (6, 0), (40, 0), (75, 0), (110, 0),
@@ -120,21 +124,24 @@ class Run:
             self.player.face_dir = self.player.xdir
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.xdir == 0:
             if self.player.face_dir == 1:  # right
                 self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 20, 22,
-                                                      0, ' ', self.player.x + 5, self.player.y, 75, 75)
+                                                      0, ' ', sx + 5, sy, 75, 75)
             else:  # face_dir == -1: # left
                 self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 20, 22,
-                                                      0, 'h', self.player.x - 5, self.player.y, 75, 75)
+                                                      0, 'h', sx - 5, sy, 75, 75)
         elif self.player.xdir == 1:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
                                                   run_sprites[int(self.player.frame)][1], 20, 22,
-                                                  0, ' ', self.player.x + 5, self.player.y, 75, 75)
+                                                  0, ' ', sx + 5, sy, 75, 75)
         else:
             self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
                                                   run_sprites[int(self.player.frame)][1], 20, 22,
-                                                  0, 'h', self.player.x - 5, self.player.y, 75, 75)
+                                                  0, 'h', sx - 5, sy, 75, 75)
 
 skill2_sprites = [
     (0, 50, 100, 150, 200, 250),
@@ -156,7 +163,7 @@ class Skill2:
         elif userdata.playerWeapon['gun'][1] >= 2:
             self.burst_atk *= 1.25  # 스킬2 공격력 증가
 
-        burst = Burst(self.player.x + self.player.xdir * 75, self.player.y, self.player.face_dir * 1280, face_dir = self.player.face_dir, xdir = self.player.xdir, atk = self.burst_atk)
+        burst = Burst(self.player.x + self.player.xdir * 75, self.player.y, self.player.face_dir * get_canvas_width(), face_dir = self.player.face_dir, xdir = self.player.xdir, atk = self.burst_atk)
         game_world.add_object(burst, 1)
         game_world.add_collision_pair('bullet:monster', burst, None)
 
@@ -182,20 +189,23 @@ class Skill2:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if userdata.playerWeapon['gun'][1] == 5:
             if self.player.face_dir == 1:  # right
                 self.player.skill2_image2.clip_composite_draw(skill2_sprites[1][int(self.player.frame)], 0,
-                                                       81, 28, 0, ' ', self.player.x + 5, self.player.y + 10, 300, 95)
+                                                       81, 28, 0, ' ', sx + 5, sy + 10, 300, 95)
             else:  # face_dir == -1: # left
                 self.player.skill2_image2.clip_composite_draw(skill2_sprites[1][int(self.player.frame)], 0,
-                                                       81, 28, 0, 'h', self.player.x - 5, self.player.y + 10, 300, 95)
+                                                       81, 28, 0, 'h', sx - 5, sy + 10, 300, 95)
         else:
             if self.player.face_dir == 1:  # right
                 self.player.skill2_image1.clip_composite_draw(skill2_sprites[0][int(self.player.frame)], 0,
-                                                        49, 27, 0, ' ', self.player.x + 65, self.player.y + 15, 200, 100)
+                                                        49, 27, 0, ' ', sx + 65, sy + 15, 200, 100)
             else:  # face_dir == -1: # left
                 self.player.skill2_image1.clip_composite_draw(skill2_sprites[0][int(self.player.frame)], 0,
-                                                        49, 27, 0, 'h', self.player.x - 65, self.player.y + 15, 200, 100)
+                                                        49, 27, 0, 'h', sx - 65, sy + 15, 200, 100)
 
 skill3_sprites = [
     (1, 1), (77, 1), (153, 1), (229, 1),
@@ -210,11 +220,11 @@ class Skill3:
         self.player.frame = 0  # 공격 프레임 초기화
         if userdata.playerWeapon['gun'][1] == 5:
             for k in range(2):
-                laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y + 200 - 400 * k, atk=self.player.atk * 2.5, w= 225, h= 110)
+                laser = Laser(self.player.x, self.player.y, self.player.face_dir * get_canvas_width(), self.player.y + 200 - 400 * k, atk=self.player.atk * 2.5, w= 225, h= 110)
                 game_world.add_object(laser, 1)
                 game_world.add_collision_pair('bullet:monster', laser, None)
         elif userdata.playerWeapon['gun'][1] >= 2:
-            laser = Laser(self.player.x, self.player.y, self.player.face_dir * 1280, self.player.y, atk=self.player.atk * 2.0, w= 200, h= 100)
+            laser = Laser(self.player.x, self.player.y, self.player.face_dir * get_canvas_width(), self.player.y, atk=self.player.atk * 2.0, w= 200, h= 100)
             game_world.add_object(laser, 1)
             game_world.add_collision_pair('bullet:monster', laser, None)
 
@@ -233,12 +243,15 @@ class Skill3:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if self.player.face_dir == 1:  # right
             self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
-                                                   74, 33, 0, ' ', self.player.x + 120, self.player.y + 20, 300, 115)
+                                                   74, 33, 0, ' ', sx + 120, sy + 20, 300, 115)
         else:  # face_dir == -1: # left
             self.player.skill3_image.clip_composite_draw(skill3_sprites[int(self.player.frame)][0], skill3_sprites[int(self.player.frame)][1],
-                                                   74, 33, 0, 'h', self.player.x - 120, self.player.y + 20, 300, 115)
+                                                   74, 33, 0, 'h', sx - 120, sy + 20, 300, 115)
 
 slide_sprites = [ (0, 62), (54, 62), (108, 62),
                   (0, 35), (32, 35), (64, 35),
@@ -275,20 +288,23 @@ class Slide:
                 self.player.state_machine.cur_state = self.player.RUN
 
     def draw(self):
+        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.player.y - common.map.window_bottom
+
         if 3.0 <= self.player.frame < 12.0:
             if self.player.face_dir == 1:  # right
                 self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 31, 17,
-                                                      0, ' ', self.player.x - 5, self.player.y, 100, 75)
+                                                      0, ' ', sx - 5, sy, 100, 75)
             else:  # face_dir == -1: # left
                 self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 31, 17,
-                                                      0, 'h', self.player.x + 5, self.player.y, 100, 75)
+                                                      0, 'h', sx + 5, sy, 100, 75)
         else:
             if self.player.face_dir == 1:  # right
                 self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 53, 25,
-                                                      0, ' ', self.player.x - 5, self.player.y + 10, 230, 90)
+                                                      0, ' ', sx - 5, sy + 10, 230, 90)
             else:  # face_dir == -1: # left
                 self.player.slide_image.clip_composite_draw(slide_sprites[int(self.player.frame)][0], slide_sprites[int(self.player.frame)][1], 53, 25,
-                                                      0, 'h', self.player.x + 5, self.player.y + 10, 230, 90)
+                                                      0, 'h', sx + 5, sy + 10, 230, 90)
 
 class PlayerG:
     def __init__(self):
@@ -346,6 +362,10 @@ class PlayerG:
 
     def update(self):
         self.state_machine.update()
+
+        self.x = clamp(50, self.x, common.map.w - 50)
+        self.y = clamp(50, self.y, common.map.h - 50)
+
         # 발사 쿨타임 감소 및 연속 발사 처리
         dt = game_framework.frame_time
         if self.fire_cooldown > 0.0:

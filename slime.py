@@ -4,6 +4,7 @@ import userdata
 import game_framework
 import game_world
 from damage_font import DamageFont
+import common
 
 from pico2d import *
 
@@ -114,12 +115,15 @@ class Slime:
         sprite_x = slime_sprite[self.type][int(self.frame)][0]
         sprite_y = slime_sprite[self.type][int(self.frame)][1]
 
+        scx = self.x - common.map.window_left
+        scy = self.y - common.map.window_bottom
+
         if self.dir > 0:
             Slime.image.clip_composite_draw(sprite_x, sprite_y, slime_size[0], slime_size[1],
-                                       0, 'h', self.x, self.y, 75, 75)
+                                       0, 'h', scx, scy, 75, 75)
         else:
             Slime.image.clip_composite_draw(sprite_x, sprite_y, slime_size[0], slime_size[1],
-                                       0, ' ', self.x, self.y, 75, 75)
+                                       0, ' ', scx, scy, 75, 75)
 
         draw_rectangle(*self.get_bb())
 
