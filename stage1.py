@@ -2,6 +2,7 @@ import random
 from pico2d import *
 
 import cockpit_mode
+import death_mode
 from general_stage import GeneralStage
 from keese import Keese as monster2
 from players import PlayerS
@@ -120,6 +121,9 @@ def update():
         phaseClear = False
         common.map.left_border += 1
         spawn_monster(common.map.left_border)
+
+    if common.player.hp == 0:
+        game_framework.push_mode(death_mode)
 
     game_world.update()
     game_world.handle_collisions()

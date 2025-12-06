@@ -2,6 +2,7 @@ import random
 from pico2d import *
 
 import cockpit_mode
+import death_mode
 from farming_map import FarmingMap
 from players import PlayerS
 from playerg import PlayerG
@@ -62,8 +63,7 @@ def update():
         spawn_timer = 0.0
 
     if common.player.hp == 0:
-        game_framework.change_mode(cockpit_mode)
-
+        game_framework.push_mode(death_mode)
     game_world.update()
     game_world.handle_collisions()
 
