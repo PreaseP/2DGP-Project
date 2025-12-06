@@ -6,6 +6,7 @@ import game_world
 import lab_mode
 import armory_mode
 import stage1
+import stage2
 import userdata
 from button import Button
 from game_framework import change_mode
@@ -62,6 +63,8 @@ def handle_events():
                     elif button.button_type == 'stage_select':
                         if userdata.stageClear == 0:
                             change_mode(stage1)
+                        elif userdata.stageClear == 1:
+                            change_mode(stage2)
         elif event.type == SDL_MOUSEWHEEL:
             if event.y >0:
                 game_framework.change_mode(lab_mode)
