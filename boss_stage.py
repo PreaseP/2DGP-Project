@@ -4,6 +4,7 @@ from pico2d import *
 import cockpit_mode
 import death_mode
 import pause_menu
+from boss import Boss
 from boss_map import BossMap
 from players import PlayerS
 from playerg import PlayerG
@@ -36,6 +37,12 @@ def init():
         common.player = PlayerG()
     game_world.add_object(common.player, 1)
     game_world.add_collision_pair('player:monster', common.player, None)
+
+    boss = Boss()
+    game_world.add_collision_pair('nonBullet:monster', None, boss)
+    game_world.add_collision_pair('bullet:monster', None, boss)
+    game_world.add_collision_pair('player:monster', None, boss)
+    game_world.add_object(boss, 1)
 
 def update():
 
