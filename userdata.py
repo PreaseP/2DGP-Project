@@ -4,10 +4,10 @@ import game_framework
 
 playerLevel = [1, 0] # [level, exp]
 
-playerSkill = {'general' : [0,0,0], 'sword' : [0,2], 'gun' : [0,2]}
+playerSkill = {'general' : [0,0,0], 'sword' : [0,0], 'gun' : [0,0]}
 # 공격력, 체력, 이동속도 / 검 무기 연성 확률, 검 이동 스킬 / 총 무기 연성 확률, 총 이동 스킬
 
-relics = {'relic1' : 2, 'relic2' : 1}
+relics = {'relic1' : 0, 'relic2' : 0}
 
 maxHealth = 3 + playerSkill['general'][1] * 1
 if relics['relic1'] == 2:
@@ -17,7 +17,7 @@ maxSkillLevel = {'general' : (5,5,5), 'sword' : (3, 2), 'gun' : (3, 2)}
 
 weaponPercent = [(60, 35, 5), (20, 65, 15), (15, 45, 40), (5, 20, 75)] # 무기 연성 확률 리스트
 
-playerWeapon = {'sword' : [1,2], 'gun' : [1,2]} # [검 등급, 강화 정도] / [총 등급, 강화 정도]
+playerWeapon = {'sword' : [0,0], 'gun' : [0,0]} # [검 등급, 강화 정도] / [총 등급, 강화 정도]
 
 weaponAtk = [10, 20, 40] # 무기 등급별 공격력
 
@@ -26,8 +26,9 @@ weaponUp = [0, 0.1, 0.3, 0.4, 0.5, 0.7] # 무기 강화별 추가 계수
 makeCost = 100 # 무기 연성 비용
 upgradeCost = [50, 100, 200, 400, 800] # 무기 강화 비용
 
-stageClear = 2
+stageClear = 0
 
+guide = {'cockpit' : False, 'armory' : False, 'lab' : False}
 
 
 def make_weapon(weapon_type):
@@ -112,14 +113,15 @@ def save_userdata():
         'playerWeapon': playerWeapon,
         'playerSkill': playerSkill,
         'stageClear': stageClear,
-        'relics': relics
+        'relics': relics,
+        'guide' : guide
     }
     with open('save.json', 'w') as f:
         json.dump(data, f)
 
 def load_userdata():
     import json
-    global playerLevel, playerType, playerGold, playerSkillPoint, playerWeapon, playerSkill, stageClear, relics
+    global playerLevel, playerType, playerGold, playerSkillPoint, playerWeapon, playerSkill, stageClear, relics, guide
     try:
         with open('save.json', 'r') as f:
             data = json.load(f)
@@ -131,5 +133,6 @@ def load_userdata():
             playerSkill = data['playerSkill']
             stageClear = data['stageClear']
             relics = data['relics']
+            guide = data['guide']
     except FileNotFoundError:
         pass

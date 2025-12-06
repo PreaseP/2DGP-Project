@@ -1,6 +1,7 @@
 from pico2d import *
 
 import boss_stage
+import cockpit_guide
 import farming_stage
 import game_framework
 import game_world
@@ -83,6 +84,10 @@ def init():
     gun = load_image('resources/sprites/gun_icon.png')
     farming_star = load_image('resources/background/farming_stage.png')
     stage_star = load_image('resources/background/stage' + str(userdata.stageClear + 1) + '_star.png')
+
+    if not userdata.guide['cockpit']:
+        userdata.guide['cockpit'] = True
+        game_framework.push_mode(cockpit_guide)
 
 def update():
     game_world.update()
