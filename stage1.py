@@ -3,6 +3,7 @@ from pico2d import *
 
 import cockpit_mode
 from general_stage import GeneralStage
+from keese import Keese
 from players import PlayerS
 from playerg import PlayerG
 from biri import Biri
@@ -44,11 +45,11 @@ def init():
     game_world.add_collision_pair('player:monster', common.player, None)
 
     for _ in range(10):
-        biri = Biri()
-        game_world.add_object(biri, 1)
-        game_world.add_collision_pair('nonBullet:monster', None, biri)
-        game_world.add_collision_pair('bullet:monster', None, biri)
-        game_world.add_collision_pair('player:monster', None, biri)
+        mob = Keese()
+        game_world.add_object(mob, 1)
+        game_world.add_collision_pair('nonBullet:monster', None, mob)
+        game_world.add_collision_pair('bullet:monster', None, mob)
+        game_world.add_collision_pair('player:monster', None, mob)
 
 def update():
 
