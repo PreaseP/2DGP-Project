@@ -105,9 +105,10 @@ class Idle:
                                                   0, 'h', sx - 15, sy, 75, 75)
 
 run_sprites = [
-    (0, 0), (32, 0), (64, 0), (96, 0),
-    (128, 0), (160, 0), (192, 0), (224, 0)
+    (0, 0, 31), (32, 0, 31), (64, 0, 31), (96, 0, 31),
+    (128, 0, 31), (160, 0, 31), (192, 0, 31), (224, 0, 31)
 ]
+
 
 class Run:
     def __init__(self, player):
@@ -130,24 +131,35 @@ class Run:
             self.player.face_dir = self.player.xdir
 
     def draw(self):
-        sx = self.player.x - common.map.window_left  # 화면상의 x 위치
+        sx = self.player.x - common.map.window_left
         sy = self.player.y - common.map.window_bottom
 
         if self.player.xdir == 0:
-            if self.player.face_dir == 1:  # right
-                self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
-                                                      0, ' ', sx - 15, sy, 75, 75)
-            else:  # face_dir == -1: # left
-                self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0], run_sprites[int(self.player.frame)][1], 31, 22,
-                                                      0, 'h', sx + 15, sy, 75, 75)
+            if self.player.face_dir == 1:
+                self.player.image.clip_composite_draw(
+                    run_sprites[int(self.player.frame)][0],
+                    run_sprites[int(self.player.frame)][1],
+                    run_sprites[int(self.player.frame)][2], 22,
+                    0, ' ', sx - 15, sy, 75, 75)
+            else:
+                self.player.image.clip_composite_draw(
+                    run_sprites[int(self.player.frame)][0],
+                    run_sprites[int(self.player.frame)][1],
+                    run_sprites[int(self.player.frame)][2], 22,
+                    0, 'h', sx + 15, sy, 75, 75)
         elif self.player.xdir == 1:
-            self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
-                                                  run_sprites[int(self.player.frame)][1], 31, 22,
-                                                  0, ' ', sx - 15, sy, 75, 75)
+            self.player.image.clip_composite_draw(
+                run_sprites[int(self.player.frame)][0],
+                run_sprites[int(self.player.frame)][1],
+                run_sprites[int(self.player.frame)][2], 22,
+                0, ' ', sx - 15, sy, 75, 75)
         else:
-            self.player.image.clip_composite_draw(run_sprites[int(self.player.frame)][0],
-                                                  run_sprites[int(self.player.frame)][1], 31, 22,
-                                                  0, 'h', sx + 15, sy, 75, 75)
+            self.player.image.clip_composite_draw(
+                run_sprites[int(self.player.frame)][0],
+                run_sprites[int(self.player.frame)][1],
+                run_sprites[int(self.player.frame)][2], 22,
+                0, 'h', sx + 15, sy, 75, 75)
+
 
 attack_sprites = [
     (0, 0, 62), (63, 0, 62), (126, 0, 62), (189, 0, 62),
