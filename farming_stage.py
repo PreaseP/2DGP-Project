@@ -61,6 +61,9 @@ def update():
             game_world.add_collision_pair('player:monster', None, slime)
         spawn_timer = 0.0
 
+    if common.player.hp == 0:
+        game_framework.change_mode(cockpit_mode)
+
     game_world.update()
     game_world.handle_collisions()
 
