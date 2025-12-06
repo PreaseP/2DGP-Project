@@ -1,8 +1,6 @@
 from pico2d import load_image, get_canvas_width, get_canvas_height, clamp
 import common
 
-borders = (0, 1280, 2560, 3840, 5120)
-
 class GeneralStage:
     def __init__(self, image):
         self.image = load_image('resources/background/' + image + '.png' )
@@ -15,10 +13,10 @@ class GeneralStage:
         self.right_border = 1
 
     def update(self):
-        self.window_left = clamp(borders[self.left_border], int(common.player.x) - self.cw // 2, borders[self.right_border] - self.cw - 1)
+        self.window_left = clamp(common.borders[self.left_border], int(common.player.x) - self.cw // 2, common.borders[self.right_border] - self.cw - 1)
         self.window_bottom = clamp(0, int(common.player.y) - self.ch // 2, self.h - self.ch - 1)
 
-        common.player.x = clamp(50 + borders[self.left_border], common.player.x, borders[self.right_border] - 50)
+        common.player.x = clamp(50 + common.borders[self.left_border], common.player.x, common.borders[self.right_border] - 50)
         common.player.y = clamp(50, common.player.y, common.map.h - 50)
 
     def draw(self):

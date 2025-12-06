@@ -5,6 +5,8 @@ import cockpit_mode
 from general_stage import GeneralStage
 from players import PlayerS
 from playerg import PlayerG
+from biri import Biri
+
 import game_framework
 import game_world
 import userdata
@@ -27,7 +29,7 @@ def init():
     common.map = GeneralStage('stage1')
     game_world.add_object(common.map, 0)
 
-    common.map.right_border = 2
+    common.map.right_border = 1
     common.map.left_border = 0
 
     if userdata.playerType == 'S':
@@ -40,6 +42,13 @@ def init():
 
     game_world.add_object(common.player, 1)
     game_world.add_collision_pair('player:monster', common.player, None)
+
+    for _ in range(10):
+        biri = Biri()
+        game_world.add_object(biri, 1)
+        game_world.add_collision_pair('nonBullet:monster', None, biri)
+        game_world.add_collision_pair('bullet:monster', None, biri)
+        game_world.add_collision_pair('player:monster', None, biri)
 
 def update():
 
