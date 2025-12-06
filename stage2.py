@@ -8,7 +8,7 @@ from general_stage import GeneralStage
 from keese import Keese as monster2
 from players import PlayerS
 from playerg import PlayerG
-from biri import Biri as monster1
+from bugger import Bugger as monster1
 from relic import Relic
 from wraith import Wraith as monster3
 
@@ -29,13 +29,13 @@ def spawn_monster(num):
             game_world.add_collision_pair('nonBullet:monster', None, mob)
             game_world.add_collision_pair('bullet:monster', None, mob)
             game_world.add_collision_pair('player:monster', None, mob)
-        for _ in range(2):
-            mob = monster2()
-            game_world.add_object(mob, 1)
-            game_world.add_collision_pair('nonBullet:monster', None, mob)
-            game_world.add_collision_pair('bullet:monster', None, mob)
-            game_world.add_collision_pair('player:monster', None, mob)
-        common.monsterCount = 7
+        # for _ in range(2):
+        #     mob = monster2()
+        #     game_world.add_object(mob, 1)
+        #     game_world.add_collision_pair('nonBullet:monster', None, mob)
+        #     game_world.add_collision_pair('bullet:monster', None, mob)
+        #     game_world.add_collision_pair('player:monster', None, mob)
+        common.monsterCount = 5
     elif num == 1:
         for _ in range(2):
             mob = monster1()
@@ -88,7 +88,7 @@ def init():
     font = load_font('resources/DungGeunMo.TTF', 50)
     small_font = load_font('resources/DungGeunMo.TTF', 20)
 
-    common.map = GeneralStage('stage1')
+    common.map = GeneralStage('stage2')
     game_world.add_object(common.map, 0)
 
     common.map.left_border = 0
@@ -106,7 +106,7 @@ def init():
     game_world.add_collision_pair('player:monster', common.player, None)
     game_world.add_collision_pair('player:relic', common.player, None)
 
-    relic = Relic(type=1)
+    relic = Relic(type=2)
     game_world.add_object(relic, 1)
     game_world.add_collision_pair('player:relic', None, relic)
 
@@ -134,7 +134,6 @@ def draw():
     clear_canvas()
     game_world.render()
     userdata.show_status(common.player.hp)
-
     if phaseClear:
         # 우측 상단에 'GO!' 표시
         font.draw(1100, 650, 'GO!', (255, 0, 0))
