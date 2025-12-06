@@ -139,25 +139,25 @@ class Run:
                 self.player.image.clip_composite_draw(
                     run_sprites[int(self.player.frame)][0],
                     run_sprites[int(self.player.frame)][1],
-                    run_sprites[int(self.player.frame)][2], 22,
+                    run_sprites[int(self.player.frame)][2], 24,
                     0, ' ', sx - 15, sy, 75, 75)
             else:
                 self.player.image.clip_composite_draw(
                     run_sprites[int(self.player.frame)][0],
                     run_sprites[int(self.player.frame)][1],
-                    run_sprites[int(self.player.frame)][2], 22,
+                    run_sprites[int(self.player.frame)][2], 24,
                     0, 'h', sx + 15, sy, 75, 75)
         elif self.player.xdir == 1:
             self.player.image.clip_composite_draw(
                 run_sprites[int(self.player.frame)][0],
                 run_sprites[int(self.player.frame)][1],
-                run_sprites[int(self.player.frame)][2], 22,
+                run_sprites[int(self.player.frame)][2], 24,
                 0, ' ', sx - 15, sy, 75, 75)
         else:
             self.player.image.clip_composite_draw(
                 run_sprites[int(self.player.frame)][0],
                 run_sprites[int(self.player.frame)][1],
-                run_sprites[int(self.player.frame)][2], 22,
+                run_sprites[int(self.player.frame)][2], 24,
                 0, 'h', sx + 15, sy, 75, 75)
 
 
