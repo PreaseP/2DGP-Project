@@ -100,11 +100,11 @@ class Wraith:
         if math.cos(self.dir) < 0:
             Wraith.image.clip_composite_draw(sprites[animationNames[self.state]][int(self.frame)][0],
                                            sprites[animationNames[self.state]][int(self.frame)][1],
-                                           size[animationNames[self.state]][0], size[animationNames[self.state]][1], 0, 'h', sx, sy, self.w, self.h)
+                                           size[animationNames[self.state]][0], size[animationNames[self.state]][1], 0, ' ', sx, sy, self.w, self.h)
         else:
             Wraith.image.clip_composite_draw(sprites[animationNames[self.state]][int(self.frame)][0],
                                            sprites[animationNames[self.state]][int(self.frame)][1],
-                                           size[animationNames[self.state]][0], size[animationNames[self.state]][1], 0, ' ', sx, sy, self.w, self.h)
+                                           size[animationNames[self.state]][0], size[animationNames[self.state]][1], 0, 'h', sx, sy, self.w, self.h)
 
         draw_rectangle(*self.get_bb())
 
