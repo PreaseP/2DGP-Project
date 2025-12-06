@@ -27,8 +27,11 @@ def handle_events():
             common.player.handle_event(event)
 
 def init():
+    global small_font
     common.map = FarmingMap()
     game_world.add_object(common.map, 0)
+
+    small_font = load_font('resources/DungGeunMo.TTF', 20)
 
     global spawn_timer
     spawn_timer = 5.0
@@ -72,6 +75,17 @@ def draw():
     clear_canvas()
     game_world.render()
     userdata.show_status(common.player.hp)
+
+    if userdata.playerType == 'S':
+        if common.player.dash_time > 0.0:
+            small_font.draw(480, 80, f'이동 스킬 재사용 대기시간 : {common.player.dash_time:.1f}초', (0, 255, 0))
+    else:
+        if common.player.slide_time > 0.0:
+            small_font.draw(480, 80, f'이동 스킬 재사용 대기시간 : {common.player.slide_time:.1f}초', (0, 255, 0))
+
+    if common.player.weapon_time > 0.0:
+        small_font.draw(480, 100, f'무기 스킬 대기시간 : {common.player.weapon_time:.1f}초', (255, 0, 0))
+
     update_canvas()
 
 
