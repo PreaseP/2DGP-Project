@@ -36,7 +36,7 @@ def handle_events():
 
 def init():
     global image, font, big_font
-    image = load_image('resources/background/relic1_choice_screen.png')
+    image = load_image('resources/background/relic2_choice_screen.png')
     font = load_font('resources/DungGeunMo.TTF', 30)
     big_font = load_font('resources/DungGeunMo.TTF', 40)
 
@@ -44,7 +44,6 @@ def update():
     pass
 
 def draw():
-    global swordImage, gunImage
     clear_canvas()
     image.draw(640, 360, 1280, 720)
 

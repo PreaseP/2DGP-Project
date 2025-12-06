@@ -44,7 +44,6 @@ def update():
     pass
 
 def draw():
-    global swordImage, gunImage
     clear_canvas()
     image.draw(640, 360, 1280, 720)
 
