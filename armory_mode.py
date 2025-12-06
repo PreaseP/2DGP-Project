@@ -5,6 +5,7 @@ import cockpit_mode
 import game_framework
 from button import Button
 import userdata
+import common
 
 swordImage = None
 gunImage = None
@@ -68,6 +69,12 @@ def init():
         swordImage = [load_image(f"resources/sprites/sword_{i}.png") for i in range(1, 4)]
     if gunImage is None:
         gunImage = [load_image(f"resources/sprites/gun_{i}.png") for i in range(1, 4)]
+
+    if not common.playing:
+        common.main_bgm = load_music('resources/sound/main.mp3')
+        common.main_bgm.set_volume(32)
+        common.main_bgm.repeat_play()
+        common.playing = True
 
     if not userdata.guide['armory']:
         userdata.guide['armory'] = True

@@ -7,6 +7,8 @@ import cockpit_mode
 import game_framework
 import lab_guide
 import userdata
+import common
+
 from button import Button
 
 # -------------------- 레이아웃 상수/헬퍼 --------------------
@@ -94,6 +96,12 @@ def init():
 
     # 클릭 판정 리스트에 등록
     buttonList = [b for (b, _, _) in skill_buttons]
+
+    if not common.playing:
+        common.main_bgm = load_music('resources/sound/main.mp3')
+        common.main_bgm.set_volume(32)
+        common.main_bgm.repeat_play()
+        common.playing = True
 
     if not userdata.guide['lab']:
         userdata.guide['lab'] = True

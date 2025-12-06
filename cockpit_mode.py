@@ -10,6 +10,8 @@ import armory_mode
 import stage1
 import stage2
 import userdata
+import common
+
 from button import Button
 from game_framework import change_mode
 from info_font import InfoFont
@@ -84,6 +86,12 @@ def init():
     gun = load_image('resources/sprites/gun_icon.png')
     farming_star = load_image('resources/background/farming_stage.png')
     stage_star = load_image('resources/background/stage' + str(userdata.stageClear + 1) + '_star.png')
+
+    if not common.playing:
+        common.main_bgm = load_music('resources/sound/main.mp3')
+        common.main_bgm.set_volume(32)
+        common.main_bgm.repeat_play()
+        common.playing = True
 
     if not userdata.guide['cockpit']:
         userdata.guide['cockpit'] = True
