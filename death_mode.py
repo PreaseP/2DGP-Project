@@ -27,8 +27,6 @@ def update():
         game_framework.change_mode(cockpit_mode)
         return
 
-    game_world.update()
-
 def draw():
     clear_canvas()
     game_world.render()
