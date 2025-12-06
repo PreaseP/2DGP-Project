@@ -1,5 +1,6 @@
 from pico2d import *
 
+import boss_stage
 import farming_stage
 import game_framework
 import game_world
@@ -65,6 +66,8 @@ def handle_events():
                             change_mode(stage1)
                         elif userdata.stageClear == 1:
                             change_mode(stage2)
+                        elif userdata.stageClear == 2:
+                            change_mode(boss_stage)
         elif event.type == SDL_MOUSEWHEEL:
             if event.y >0:
                 game_framework.change_mode(lab_mode)
