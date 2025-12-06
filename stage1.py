@@ -7,6 +7,7 @@ from keese import Keese as monster2
 from players import PlayerS
 from playerg import PlayerG
 from biri import Biri as monster1
+from relic import Relic
 from wraith import Wraith as monster3
 
 import game_framework
@@ -87,8 +88,8 @@ def init():
     common.map = GeneralStage('stage1')
     game_world.add_object(common.map, 0)
 
-    common.map.right_border = 1
     common.map.left_border = 0
+    common.map.right_border = 1
 
     if userdata.playerType == 'S':
         common.player = PlayerS()
@@ -100,6 +101,11 @@ def init():
 
     game_world.add_object(common.player, 1)
     game_world.add_collision_pair('player:monster', common.player, None)
+    game_world.add_collision_pair('player:relic', common.player, None)
+
+    relic = Relic(type=1)
+    game_world.add_object(relic, 1)
+    game_world.add_collision_pair('player:relic', None, relic)
 
     spawn_monster(common.map.left_border)
 
