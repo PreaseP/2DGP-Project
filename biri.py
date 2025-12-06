@@ -23,8 +23,8 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 6.0
 
 # Attack
-TIME_PER_ACTION = 0.7
-ATTACK_PER_TIME = 1.0 / TIME_PER_ACTION
+TIME_PER_ATTACK = 0.7
+ATTACK_PER_TIME = 1.0 / TIME_PER_ATTACK
 FRAMES_PER_ATTACK = 12.0
 
 animationNames = {'Walk' : 0, 'Attack' : 1}
@@ -72,7 +72,11 @@ class Biri:
 
 
     def update(self):
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        if self.state == 'Walk':
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        elif self.state == 'Attack':
+            self.frame = (self.frame + FRAMES_PER_ATTACK * ATTACK_PER_TIME * game_framework.frame_time) % FRAMES_PER_ATTACK
+
         self.bt.run() # 매 프레임마다 행동트리를 root부터 시작해서 실행함.
 
         if self.protect:
