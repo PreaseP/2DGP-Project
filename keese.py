@@ -47,7 +47,7 @@ class Keese:
 
         self.r = 11.0
 
-        self.hp = 120
+        self.hp = 70
 
         if Keese.image == None:
             Keese.image = load_image('resources/sprites/relic1_keese.png')
