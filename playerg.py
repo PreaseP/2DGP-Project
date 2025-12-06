@@ -1,4 +1,4 @@
-from pico2d import load_image, load_font, draw_rectangle, get_canvas_width, get_canvas_height, clamp
+from pico2d import load_image, load_font, load_wav, draw_rectangle, get_canvas_width, get_canvas_height, clamp
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
     SDL_MOUSEMOTION, SDL_BUTTON_RIGHT, SDLK_LSHIFT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
@@ -163,6 +163,7 @@ class Skill2:
         elif userdata.playerWeapon['gun'][1] >= 2:
             self.burst_atk *= 1.25  # 스킬2 공격력 증가
 
+        self.player.burst_sound.play()
         burst = Burst(self.player.x + self.player.xdir * 75, self.player.y, self.player.face_dir * get_canvas_width(), face_dir = self.player.face_dir, xdir = self.player.xdir, atk = self.burst_atk)
         game_world.add_object(burst, 1)
         game_world.add_collision_pair('bullet:monster', burst, None)
@@ -176,6 +177,7 @@ class Skill2:
         # 공격 애니메이션이 끝나면 상태 전환
 
         if int(self.player.frame) == 3 and self.second_burst:
+            self.player.burst_sound.play()
             burst = Burst(self.player.x - self.player.xdir * 75, self.player.y, self.player.face_dir * -1280,
                           face_dir=self.player.face_dir * -1, xdir=self.player.xdir, atk=self.burst_atk)
             game_world.add_object(burst, 1)
@@ -218,6 +220,7 @@ class Skill3:
 
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
+        self.player.laser_sound.play()
         if userdata.playerWeapon['gun'][1] == 5:
             for k in range(2):
                 laser = Laser(self.player.x, self.player.y, self.player.face_dir * get_canvas_width(), self.player.y + 200 - 400 * k, atk=self.player.atk * 2.5, w= 225, h= 110)
@@ -268,6 +271,7 @@ class Slide:
         self.player.frame = 0.0
         self.player.slide = True
 
+        self.player.slide_sound.play()
         if self.player.xdir != 0:
             self.player.face_dir = self.player.xdir
 
@@ -319,6 +323,16 @@ class PlayerG:
         self.skill2_image2 = load_image('resources/sprites/gun_skill2_set2.png')
         self.skill3_image = load_image('resources/sprites/gun_skill3_set.png')
         self.slide_image = load_image('resources/sprites/gun_slide.png')
+
+        self.shot_sound = load_wav('resources/sound/shot.wav')
+        self.shot_sound.set_volume(32)
+        self.burst_sound = load_wav('resources/sound/burst.wav')
+        self.burst_sound.set_volume(32)
+        self.laser_sound = load_wav('resources/sound/laser.wav')
+        self.laser_sound.set_volume(32)
+        self.slide_sound = load_wav('resources/sound/slide.wav')
+        self.slide_sound.set_volume(32)
+
         self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.attacking = False
         self.slide = False
@@ -391,6 +405,7 @@ class PlayerG:
                     b = Bullet(self.x, self.y, self.last_mouse_x + i * self.face_dir, self.last_mouse_y + i, atk=self.atk, heal=heal)
                     game_world.add_object(b, 1)
                     game_world.add_collision_pair('bullet:monster', b, None)
+            self.shot_sound.play()
             b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y, atk=self.atk, heal=heal)
             game_world.add_object(b, 1)
             game_world.add_collision_pair('bullet:monster', b, None)
