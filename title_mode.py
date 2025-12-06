@@ -15,10 +15,13 @@ def handle_events():
             game_framework.change_mode(cockpit_mode)
 
 def init():
-    global image, logo, font
+    global image, logo, font, bgm
     image = load_image('resources/background/title.png')
     logo = load_image('resources/background/logo.png')
     font = load_font('resources/DungGeunMo.TTF', 50)
+    bgm = load_music('resources/sound/title.mp3')
+    bgm.set_volume(32)
+    bgm.repeat_play()
 
 def update():
     pass
