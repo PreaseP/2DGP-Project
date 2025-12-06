@@ -42,8 +42,8 @@ class Keese:
     def __init__(self, x=None, y=None):
         self.x = x if x else random.randint(common.borders[common.map.left_border] - 50, common.borders[common.map.right_border] + 50)
         self.y = y if y else random.choice([random.randint(-50, -30), random.randint(720 + 30, 720 + 50)])
-        self.w = 100
-        self.h = 100
+        self.w = 50
+        self.h = 50
 
         self.r = 11.0
 
@@ -68,7 +68,7 @@ class Keese:
         sx = self.x - common.map.window_left
         sy = self.y - common.map.window_bottom
 
-        return sx - self.w / 2 + 10, sy - self.h / 2 + 25, sx + self.w / 2 - 10, sy + self.h /2 - 25
+        return sx - self.w / 2, sy - self.h / 2 + 10, sx + self.w / 2, sy + self.h /2 - 10
 
 
     def update(self):
