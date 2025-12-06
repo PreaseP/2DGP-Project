@@ -325,6 +325,8 @@ class PlayerG:
         self.atk = ((userdata.weaponAtk[userdata.playerWeapon['gun'][0]] + userdata.weaponAtk[userdata.playerWeapon['gun'][0]]
                      * userdata.weaponUp[userdata.playerWeapon['gun'][1]]) *
                     (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
+        if userdata.relics['relic2'] == 2:
+            self.atk *= 5.0
         self.hp = userdata.maxHealth
         self.speed = 1.0 + 0.1 * (userdata.playerSkill['general'][2])
 
