@@ -127,6 +127,7 @@ class Keese:
                 else:
                     self.x -= 10
             if self.hp <= 0:
+                common.monsterCount -= 1
                 game_world.remove_object(self)
 
     # 거리 비교 함수
