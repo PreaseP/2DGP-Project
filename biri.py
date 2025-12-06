@@ -12,7 +12,7 @@ from zombie import animation_names
 
 # Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 7.0  # Km / Hour
+RUN_SPEED_KMPH = 6.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -41,15 +41,13 @@ class Biri:
     image = None
 
     def __init__(self, x=None, y=None):
-        self.x = x if x else random.choice([random.randint(common.borders[common.map.left_border] - 50, common.borders[common.map.left_border] - 10),
-                                            random.randint(common.borders[common.map.right_border] + 10, common.borders[common.map.right_border] + 50)])
-        self.y = y if y else random.choice([random.randint(0 - 50, 0 - 10),
-                                            random.randint(720 + 10, 720 + 50)])
+        self.x = x if x else random.randint(common.borders[common.map.left_border] - 50, common.borders[common.map.right_border] + 50)
+        self.y = y if y else random.choice([random.randint(-50, -30), random.randint(720 + 30, 720 + 50)])
         self.w = 50
         self.h = 50
         self.type = random.randint(0, 1)
 
-        self.r = 1.0
+        self.r = 1.5
 
         self.hp = 120
 
@@ -77,6 +75,10 @@ class Biri:
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         self.bt.run() # 매 프레임마다 행동트리를 root부터 시작해서 실행함.
 
+        if self.protect:
+            self.protect_timer -= game_framework.frame_time
+            if self.protect_timer <= 0:
+                self.protect = False
 
     def draw(self):
         sx = self.x - common.map.window_left
@@ -147,7 +149,7 @@ class Biri:
     def attack_player(self):
         self.state = 'Attack'
         # 공격 범위 안에 들어왔는지 확인.
-        if self.distance_less_than(common.player.x, common.player.y, self.x, self.y, 0.5):
+        if self.distance_less_than(common.player.x, common.player.y, self.x, self.y, self.r):
             return BehaviorTree.SUCCESS
         else:
             self.frame = 0
