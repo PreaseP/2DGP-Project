@@ -8,6 +8,8 @@ import cockpit_mode
 import common
 import game_world
 import game_framework
+import relic_choice1
+import relic_choice2
 import userdata
 
 PIXEL_PER_METER = (1.0 / 0.03)  # 1pixel = 3cm, 1m = 33.33 pixel
@@ -46,7 +48,12 @@ class Relic:
 
     def handle_collision(self, group, other):
         if group == 'player:relic':
-            game_framework.change_mode(cockpit_mode)
+            if userdata.stageClear == 0:
+                userdata.stageClear = 1
+                game_framework.change_mode(relic_choice1)
+            elif userdata.stageClear == 1:
+                userdata.stageClear = 2
+                game_framework.change_mode(relic_choice2)
 
 
 
