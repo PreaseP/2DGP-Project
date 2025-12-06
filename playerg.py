@@ -445,7 +445,7 @@ class PlayerG:
                         self.state_machine.handle_state_event(('SKILL2', event))
                     elif userdata.playerWeapon['gun'][0] == 2:
                         self.state_machine.handle_state_event(('SKILL3', event))
-                    self.weapon_time = 1.0  # 스킬 쿨타임 설정
+                    self.weapon_time = 10.0  # 스킬 쿨타임 설정
 
             if cur_xdir != self.xdir or cur_ydir != self.ydir:  # 방향키에 따른 변화가 있으면
                 if self.xdir == 0 and self.ydir == 0:  # 멈춤
@@ -460,10 +460,6 @@ class PlayerG:
         else:
             self.state_machine.draw()
         draw_rectangle(*self.get_bb())
-        if self.weapon_time > 0.0:
-            self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
-        if self.slide_time > 0.0:
-            self.font.draw(480, 80, f'slide skill cooldown: {self.slide_time:.1f}s', (255, 255, 0))
 
 
     def skill1(self):

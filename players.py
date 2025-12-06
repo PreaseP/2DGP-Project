@@ -512,10 +512,6 @@ class PlayerS:
             self.state_machine.draw()
 
         draw_rectangle(*self.get_bb())
-        if self.weapon_time > 0.0:
-            self.font.draw(480, 100, f'weapon skill cooldown: {self.weapon_time:.1f}s', (255, 255, 0))
-        if self.dash_time > 0.0:
-            self.font.draw(480, 80, f'slide skill cooldown: {self.dash_time:.1f}s', (255, 255, 0))
 
     def get_bb(self):
         sx = self.x - common.map.window_left  # 화면상의 x 위치
