@@ -53,7 +53,7 @@ class Keese:
             Keese.image = load_image('resources/sprites/relic1_keese.png')
 
         self.dir = 0.0      # radian 값으로 방향을 표시
-        self.frame = random.randint(0, 2)
+        self.frame = random.randint(0, 6)
         self.state = 'Walk'
 
         self.protect_timer = 0.0
