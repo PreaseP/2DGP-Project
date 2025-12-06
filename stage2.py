@@ -5,12 +5,12 @@ import cockpit_mode
 import death_mode
 import pause_menu
 from general_stage import GeneralStage
-from keese import Keese as monster2
+from evir import Evir as monster2
 from players import PlayerS
 from playerg import PlayerG
 from bugger import Bugger as monster1
 from relic import Relic
-from wraith import Wraith as monster3
+from zebesian import Zebesian as monster3
 
 import game_framework
 import game_world
@@ -29,13 +29,13 @@ def spawn_monster(num):
             game_world.add_collision_pair('nonBullet:monster', None, mob)
             game_world.add_collision_pair('bullet:monster', None, mob)
             game_world.add_collision_pair('player:monster', None, mob)
-        # for _ in range(2):
-        #     mob = monster2()
-        #     game_world.add_object(mob, 1)
-        #     game_world.add_collision_pair('nonBullet:monster', None, mob)
-        #     game_world.add_collision_pair('bullet:monster', None, mob)
-        #     game_world.add_collision_pair('player:monster', None, mob)
-        common.monsterCount = 5
+        for _ in range(2):
+            mob = monster2()
+            game_world.add_object(mob, 1)
+            game_world.add_collision_pair('nonBullet:monster', None, mob)
+            game_world.add_collision_pair('bullet:monster', None, mob)
+            game_world.add_collision_pair('player:monster', None, mob)
+        common.monsterCount = 7
     elif num == 1:
         for _ in range(2):
             mob = monster1()
