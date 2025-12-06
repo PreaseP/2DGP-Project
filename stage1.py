@@ -3,10 +3,11 @@ from pico2d import *
 
 import cockpit_mode
 from general_stage import GeneralStage
-from keese import Keese
+from keese import Keese as monster2
 from players import PlayerS
 from playerg import PlayerG
-from biri import Biri
+from biri import Biri as monster1
+from wraith import Wraith as monster3
 
 import game_framework
 import game_world
@@ -14,7 +15,60 @@ import userdata
 
 import common
 
-spawn_timer = 0.0
+phaseClear = False
+font = None
+
+def spawn_monster(num):
+    if num == 0:
+        for _ in range(5):
+            mob = monster1()
+            game_world.add_object(mob, 1)
+            game_world.add_collision_pair('nonBullet:monster', None, mob)
+            game_world.add_collision_pair('bullet:monster', None, mob)
+            game_world.add_collision_pair('player:monster', None, mob)
+        for _ in range(2):
+            mob = monster2()
+            game_world.add_object(mob, 1)
+            game_world.add_collision_pair('nonBullet:monster', None, mob)
+            game_world.add_collision_pair('bullet:monster', None, mob)
+            game_world.add_collision_pair('player:monster', None, mob)
+        common.monsterCount = 7
+    elif num == 1:
+        for _ in range(2):
+            mob = monster1()
+            game_world.add_object(mob, 1)
+            game_world.add_collision_pair('nonBullet:monster', None, mob)
+            game_world.add_collision_pair('bullet:monster', None, mob)
+            game_world.add_collision_pair('player:monster', None, mob)
+        for _ in range(5):
+            mob = monster2()
+            game_world.add_object(mob, 1)
+            game_world.add_collision_pair('nonBullet:monster', None, mob)
+            game_world.add_collision_pair('bullet:monster', None, mob)
+            game_world.add_collision_pair('player:monster', None, mob)
+        for _ in range(1):
+            mob = monster3()
+            game_world.add_object(mob, 1)
+            game_world.add_collision_pair('nonBullet:monster', None, mob)
+            game_world.add_collision_pair('bullet:monster', None, mob)
+            game_world.add_collision_pair('player:monster', None, mob)
+        common.monsterCount = 8
+    elif num == 2:
+        for _ in range(4):
+            mob = monster2()
+            game_world.add_object(mob, 1)
+            game_world.add_collision_pair('nonBullet:monster', None, mob)
+            game_world.add_collision_pair('bullet:monster', None, mob)
+            game_world.add_collision_pair('player:monster', None, mob)
+        for _ in range(6):
+            mob = monster3()
+            game_world.add_object(mob, 1)
+            game_world.add_collision_pair('nonBullet:monster', None, mob)
+            game_world.add_collision_pair('bullet:monster', None, mob)
+            game_world.add_collision_pair('player:monster', None, mob)
+        common.monsterCount = 10
+    elif num == 3:
+        common.monsterCount = -1  # 마지막 스테이지, 몬스터 없음
 
 def handle_events():
     event_list = get_events()
@@ -27,6 +81,9 @@ def handle_events():
             common.player.handle_event(event)
 
 def init():
+    global font
+    font = load_font('resources/DungGeunMo.TTF', 50)
+
     common.map = GeneralStage('stage1')
     game_world.add_object(common.map, 0)
 
@@ -44,14 +101,19 @@ def init():
     game_world.add_object(common.player, 1)
     game_world.add_collision_pair('player:monster', common.player, None)
 
-    for _ in range(10):
-        mob = Keese()
-        game_world.add_object(mob, 1)
-        game_world.add_collision_pair('nonBullet:monster', None, mob)
-        game_world.add_collision_pair('bullet:monster', None, mob)
-        game_world.add_collision_pair('player:monster', None, mob)
+    spawn_monster(common.map.left_border)
 
 def update():
+    global phaseClear
+
+    if common.monsterCount == 0 and phaseClear == False:
+        phaseClear = True
+        common.map.right_border += 1
+
+    if phaseClear == True and common.player.x >= common.borders[common.map.right_border] - 640:
+        phaseClear = False
+        common.map.left_border += 1
+        spawn_monster(common.map.left_border)
 
     game_world.update()
     game_world.handle_collisions()
@@ -60,6 +122,10 @@ def draw():
     clear_canvas()
     game_world.render()
     userdata.show_status(common.player.hp)
+    if phaseClear:
+        # 우측 상단에 'GO!' 표시
+        font.draw(1100, 650, 'GO!', (255, 0, 0))
+
     update_canvas()
 
 def finish():
