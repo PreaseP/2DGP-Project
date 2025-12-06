@@ -3,6 +3,7 @@ from pico2d import *
 
 import cockpit_mode
 import death_mode
+import pause_menu
 from farming_map import FarmingMap
 from players import PlayerS
 from playerg import PlayerG
@@ -21,7 +22,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.change_mode(cockpit_mode)
+            game_framework.push_mode(pause_menu)
         else:
             common.player.handle_event(event)
 

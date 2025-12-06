@@ -3,6 +3,7 @@ from pico2d import *
 
 import cockpit_mode
 import death_mode
+import pause_menu
 from general_stage import GeneralStage
 from keese import Keese as monster2
 from players import PlayerS
@@ -78,7 +79,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            game_framework.change_mode(cockpit_mode)
+            game_framework.push_mode(pause_menu)
         else:
             common.player.handle_event(event)
 
