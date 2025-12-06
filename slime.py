@@ -125,8 +125,6 @@ class Slime:
             Slime.image.clip_composite_draw(sprite_x, sprite_y, slime_size[0], slime_size[1],
                                        0, ' ', scx, scy, 75, 75)
 
-        draw_rectangle(*self.get_bb())
-
     def handle_event(self, event):
         pass
 

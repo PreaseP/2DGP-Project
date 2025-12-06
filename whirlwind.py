@@ -19,7 +19,7 @@ class Whirlwind:
         self.atk_available = True
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
+        pass
 
     def get_bb(self):
         sx = self.x - common.map.window_left  # 화면상의 x 위치

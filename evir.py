@@ -102,9 +102,6 @@ class Evir:
                                            sprites[animationNames[self.state]][int(self.frame)][1],
                                            size[animationNames[self.state]][0], size[animationNames[self.state]][1], 0, 'h', sx, sy, self.w, self.h)
 
-        draw_rectangle(*self.get_bb())
-        draw_circle(sx, sy, int(self.r * PIXEL_PER_METER), 255, 255, 255)
-
     def handle_event(self, event):
         pass
 

@@ -461,8 +461,6 @@ class PlayerG:
             pass
         else:
             self.state_machine.draw()
-        draw_rectangle(*self.get_bb())
-
 
     def skill1(self):
         # 플레이어 기준 상하좌우로 총알 발사

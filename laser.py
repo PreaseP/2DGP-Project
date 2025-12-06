@@ -46,8 +46,6 @@ class Laser:
 
         self.image.draw(sx, sy, self.w, self.h)
 
-        draw_rectangle(*self.get_bb())
-
     def get_bb(self):
         sx = self.x - common.map.window_left  # 화면상의 x 위치
         sy = self.y - common.map.window_bottom
