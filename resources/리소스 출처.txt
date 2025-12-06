@@ -1,6 +1,4 @@
-배경
-
-우주선 관련 배경 전체, 파밍 스테이지 배경
+우주선, 행성 관련 배경 전체, 스테이지 배경 전체
 - Gemini AI로 생성
 
 스프라이트
@@ -11,7 +9,7 @@
 - https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/487315
 (Risk of Rain Returns, Commando)
 
-총알
+총알(총 캐릭터, 유물 스테이지 1 몬스터 2(Keese), 보스몬스터)
 - https://www.reddit.com/r/godot/comments/1gqvpmv/pixel_bullet
 
 무기(검)
@@ -34,37 +32,31 @@
 (Risk of Rain 2 : Soldier's Syringe, Medkit, Paul's Goat Hoof)
 
 보스 몬스터
-- https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/487953
-(Risk of Rain Returns, Gup, Geep & Gip)
 - https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/488069
 (Risk of Rain Returns, Black Imp)
-- https://www.spriters-resource.com/pc_computer/riskofrainreturns/asset/487876
-(Risk of Rain Returns, Parent)
 
 파밍 스테이지
 - https://www.spriters-resource.com/pc_computer/cryptofthenecrodancer/asset/116922
 (Crypt of the NecroDancer, Slimes)
 
-유물 스테이지 1 (평범?한 분위기)
-https://www.spriters-resource.com/nintendo_switch/cadenceofhyrule/asset/118505
-(Cadence of Hyrule: Crypt of the NecroDancer Featuring The Legend of Zelda, Pengator)
+유물 스테이지 1
 https://www.spriters-resource.com/nintendo_switch/cadenceofhyrule/asset/118512
 (Cadence of Hyrule: Crypt of the NecroDancer Featuring The Legend of Zelda, Biri)
-https://www.spriters-resource.com/nintendo_switch/cadenceofhyrule/asset/147740
-(Cadence of Hyrule: Crypt of the NecroDancer Featuring The Legend of Zelda, Moa)
-
-유물 스테이지 2 (음산한 분위기)
 https://www.spriters-resource.com/nintendo_switch/cadenceofhyrule/asset/118929
 (Cadence of Hyrule: Crypt of the NecroDancer Featuring The Legend of Zelda, Keese)
 https://www.spriters-resource.com/nintendo_switch/cadenceofhyrule/asset/118494
 (Cadence of Hyrule: Crypt of the NecroDancer Featuring The Legend of Zelda, Wraith)
-https://www.spriters-resource.com/pc_computer/vampiresurvivors/asset/244131
-(Vampire Survivors, Gigafly)
 
-유물 스테이지 3 (오염된 분위기)
+유물 스테이지 2
 https://www.spriters-resource.com/pc_computer/vampiresurvivors/asset/243864
 (Vampire Survivors, Bugger)
 https://www.spriters-resource.com/game_boy_advance/metfusion/asset/61898
 (Metroid Fusion, Evir)
 https://www.spriters-resource.com/game_boy_advance/metfusion/asset/61933
 (Metroid Fusion, zebesian)
+
+사운드 전체
+https://sounds.spriters-resource.com/pc_computer/riskofrain2/asset/413756/
+
+
+
