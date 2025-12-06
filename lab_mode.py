@@ -5,6 +5,7 @@ from pico2d import *
 
 import cockpit_mode
 import game_framework
+import lab_guide
 import userdata
 from button import Button
 
@@ -93,6 +94,10 @@ def init():
 
     # 클릭 판정 리스트에 등록
     buttonList = [b for (b, _, _) in skill_buttons]
+
+    if not userdata.guide['lab']:
+        userdata.guide['lab'] = True
+        game_framework.push_mode(lab_guide)
 
 def handle_events():
     event_list = get_events()

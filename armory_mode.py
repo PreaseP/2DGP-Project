@@ -1,5 +1,6 @@
 from pico2d import *
 
+import armory_guide
 import cockpit_mode
 import game_framework
 from button import Button
@@ -67,6 +68,10 @@ def init():
         swordImage = [load_image(f"resources/sprites/sword_{i}.png") for i in range(1, 4)]
     if gunImage is None:
         gunImage = [load_image(f"resources/sprites/gun_{i}.png") for i in range(1, 4)]
+
+    if not userdata.guide['armory']:
+        userdata.guide['armory'] = True
+        game_framework.push_mode(armory_guide)
 
 def update():
     pass
