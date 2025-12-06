@@ -84,9 +84,14 @@ def handle_events():
             common.player.handle_event(event)
 
 def init():
-    global font, small_font
+    global font, small_font, bgm
     font = load_font('resources/DungGeunMo.TTF', 50)
     small_font = load_font('resources/DungGeunMo.TTF', 20)
+    bgm = load_music('resources/sound/stage1.mp3')
+    bgm.set_volume(32)
+    bgm.repeat_play()
+
+    common.playing = False
 
     common.map = GeneralStage('stage2')
     game_world.add_object(common.map, 0)

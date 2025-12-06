@@ -25,11 +25,16 @@ def handle_events():
             common.player.handle_event(event)
 
 def init():
-    global small_font
+    global small_font, bgm
     common.map = BossMap()
     game_world.add_object(common.map, 0)
 
     small_font = load_font('resources/DungGeunMo.TTF', 20)
+    bgm = load_music('resources/sound/stage1.mp3')
+    bgm.set_volume(32)
+    bgm.repeat_play()
+
+    common.playing = False
 
     if userdata.playerType == 'S':
         common.player = PlayerS()

@@ -27,7 +27,7 @@ def handle_events():
             common.player.handle_event(event)
 
 def init():
-    global small_font
+    global small_font, bgm
     common.map = FarmingMap()
     game_world.add_object(common.map, 0)
 
@@ -50,6 +50,12 @@ def init():
         game_world.add_collision_pair('bullet:monster', None, slime)
         game_world.add_collision_pair('player:monster', None, slime)
     game_world.add_objects(slimes, 1)
+
+    bgm = load_music('resources/sound/farming.mp3')
+    bgm.set_volume(32)
+    bgm.repeat_play()
+
+    common.playing = False
 
 def update():
     global spawn_timer
