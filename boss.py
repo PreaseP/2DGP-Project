@@ -4,6 +4,7 @@ import random
 import math
 
 import common
+import ending
 import game_framework
 import game_world
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
@@ -249,7 +250,7 @@ class Boss:
             return BehaviorTree.RUNNING
 
     def end(self):
-        pass
+        game_framework.change_mode(ending)
 
     def build_behavior_tree(self):
         a1 = Action('Move to player', self.move_to_player)
