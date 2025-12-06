@@ -15,8 +15,9 @@ def handle_events():
             game_framework.change_mode(cockpit_mode)
 
 def init():
-    global image, font
+    global image, logo, font
     image = load_image('resources/background/title.png')
+    logo = load_image('resources/background/logo.png')
     font = load_font('resources/DungGeunMo.TTF', 50)
 
 def update():
@@ -25,6 +26,7 @@ def update():
 def draw():
     clear_canvas()
     image.draw(640, 360, 1280, 720)
+    logo.draw(640, 360, 1280, 720)
     font.draw(350, 100, 'Press SPACE to START', (255, 255, 255))
     update_canvas()
 
