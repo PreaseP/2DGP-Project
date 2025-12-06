@@ -8,7 +8,7 @@ import game_framework
 import game_world
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 from damage_font import DamageFont
-from zombie import animation_names
+from keese_bullet import KeeseBullet
 
 # Run Speed
 PIXEL_PER_METER = (10.0 / 0.3)  # 10 pixel 30 cm
@@ -23,7 +23,7 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 6.0
 
 # Attack
-TIME_PER_ATTACK = 1.3
+TIME_PER_ATTACK = 0.7
 ATTACK_PER_TIME = 1.0 / TIME_PER_ATTACK
 FRAMES_PER_ATTACK = 3.0
 
@@ -45,7 +45,7 @@ class Keese:
         self.w = 100
         self.h = 100
 
-        self.r = 5.0
+        self.r = 11.0
 
         self.hp = 120
 
@@ -59,7 +59,7 @@ class Keese:
         self.protect_timer = 0.0
         self.protect = False
 
-        self.attack_timer = 0.0
+        self.attack_timer = 4.0
 
         self.build_behavior_tree()
 
@@ -68,7 +68,7 @@ class Keese:
         sx = self.x - common.map.window_left
         sy = self.y - common.map.window_bottom
 
-        return sx - self.w / 2, sy - self.h / 2, sx + self.w / 2, sy + self.h /2
+        return sx - self.w / 2 + 10, sy - self.h / 2 + 25, sx + self.w / 2 - 10, sy + self.h /2 - 25
 
 
     def update(self):
@@ -168,7 +168,12 @@ class Keese:
 
         # 공격 애니메이션 재생(재생이 끝날 때까지 RUNNING 반환)
         if self.frame >= FRAMES_PER_ATTACK - 0.1:
-            self.attack_timer = 2.0  # 공격 쿨타임 설정
+            if self.attack_timer == 0.0:
+                # 공격 시점에 플레이어에게 투사체 발사
+                bullet = KeeseBullet(self.x, self.y, common.player.x, common.player.y, 4)
+                game_world.add_object(bullet, 1)
+                game_world.add_collision_pair('player:monster', None, bullet)
+                self.attack_timer = 4.0  # 공격 쿨타임 설정
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -182,7 +187,7 @@ class Keese:
         c1 = Condition('플레이어가 공격 거리 안에 있는가?', self.if_player_in_attack)
         c2 = Condition('공격이 쿨타임 중인가?', self.if_attack_cooltime)
 
-        attack_player = Sequence('플레이어 공격(공격 거리 안에 있고, 공격이 쿨타임이 아니면)', c1, c2, a2)
+        attack_player = Sequence('플레이어 공격(공격 거리 안에 있고, 공격이 쿨타임이 아니면)', c2, c1, a2)
 
         root = attack_or_chase_player = Selector('공격 아니면 추적', attack_player, chase_player)
 
