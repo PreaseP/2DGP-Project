@@ -1,4 +1,4 @@
-from pico2d import load_image, load_font, draw_rectangle, get_canvas_width, get_canvas_height, clamp
+from pico2d import load_image, load_font, load_wav, draw_rectangle, get_canvas_width, get_canvas_height, clamp
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDL_KEYUP, SDL_MOUSEBUTTONDOWN, SDL_MOUSEBUTTONUP, SDL_BUTTON_LEFT, \
     SDL_BUTTON_RIGHT, SDLK_LSHIFT
 from sdl2 import SDLK_w, SDLK_a, SDLK_s, SDLK_d
@@ -172,6 +172,8 @@ class Attack:
 
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
+        self.player.sword_sound.play()
+
         if self.player.skill1_cnt > 0:
             self.player.skill1_cnt -= 1
             effect = SwordEffect(self.player.x + self.player.xdir * 80, self.player.y, self.player.face_dir, self.player.xdir, self.player.atk * 1.5)
@@ -197,6 +199,7 @@ class Attack:
         if self.player.frame >= FRAMES_PER_ATTACK:
             if self.player.attacking:
               self.player.frame = 0
+              self.player.sword_sound.play()
 
               if self.player.skill1_cnt > 0:
                   self.player.skill1_cnt -= 1
@@ -246,6 +249,7 @@ class Skill2:
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
 
+        self.player.whirlwind_sound.play()
         if userdata.playerWeapon['sword'][1] == 5:
             whirlwind = Whirlwind(self.player.atk * 2.5)
             game_world.add_object(whirlwind, 1)
@@ -299,6 +303,7 @@ class Skill3:
     def enter(self, e):
         self.player.frame = 0  # 공격 프레임 초기화
         self.player.protect = True
+        self.player.slam_sound.play()
         if userdata.playerWeapon['sword'][1] == 5:
             slam = Slam(self.player.atk * 3.5)
             game_world.add_object(slam, 1)
@@ -320,6 +325,7 @@ class Skill3:
             self.player.protect = False
             self.player.frame = 0
             if userdata.playerWeapon['sword'][1] == 5:
+                self.player.clone_sound.play()
                 for i in range(120, -120, -50):
                     clone = sClone(self.player.x + self.player.face_dir * 50, self.player.y + i, self.player.x + self.player.face_dir * get_canvas_width(), self.player.y + i, atk=self.player.atk * 2.5)
                     game_world.add_object(clone, 1)
@@ -356,6 +362,7 @@ class Dash:
         if self.player.xdir != 0:
             self.player.face_dir = self.player.xdir
 
+        self.player.dash_sound.play()
         dash_attack = DashEffect(self.player.atk * 1.5)
         game_world.add_object(dash_attack, 1)
         game_world.add_collision_pair('nonBullet:monster', dash_attack, None)
@@ -399,6 +406,18 @@ class PlayerS:
         self.attack = load_image('resources/sprites/sword_attack.png')
         self.skill2_image = load_image('resources/sprites/sword_skill2_set.png')
         self.skill3_image = load_image('resources/sprites/sword_skill3_set.png')
+
+        self.sword_sound = load_wav('resources/sound/sword.wav')
+        self.sword_sound.set_volume(32)
+        self.whirlwind_sound = load_wav('resources/sound/whirlwind.wav')
+        self.whirlwind_sound.set_volume(32)
+        self.slam_sound = load_wav('resources/sound/slam.wav')
+        self.slam_sound.set_volume(32)
+        self.dash_sound = load_wav('resources/sound/dash.wav')
+        self.dash_sound.set_volume(32)
+        self.clone_sound = load_wav('resources/sound/clone.wav')
+        self.clone_sound.set_volume(32)
+
         self.font = load_font('resources/DungGeunMo.TTF', 20)
         self.dash_image = load_image('resources/sprites/sword_dash.png')
         self.attacking = False
