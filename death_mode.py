@@ -8,7 +8,13 @@ from button import Button
 from game_framework import change_mode
 
 def handle_events():
-    pass
+    event_list = get_events()
+    for event in event_list:
+        if event.type == SDL_QUIT:
+            game_framework.quit()
+        if event.type == SDL_KEYDOWN:
+            if event.key == SDLK_ESCAPE:
+                game_framework.change_mode(cockpit_mode)
 
 def init():
     global font, popup, small_font, death_timer
