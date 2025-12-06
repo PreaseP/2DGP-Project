@@ -47,7 +47,7 @@ class Biri:
                                             random.randint(720 + 10, 720 + 50)])
         self.w = 50
         self.h = 50
-        self.type = random.randint(0, 2)
+        self.type = random.randint(0, 1)
 
         self.r = 1.0
 
