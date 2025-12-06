@@ -72,12 +72,12 @@ class Keese:
 
 
     def update(self):
+        self.bt.run()  # 매 프레임마다 행동트리를 root부터 시작해서 실행함.
+
         if self.state == 'Walk':
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         elif self.state == 'Attack':
             self.frame = (self.frame + FRAMES_PER_ATTACK * ATTACK_PER_TIME * game_framework.frame_time) % FRAMES_PER_ATTACK
-
-        self.bt.run() # 매 프레임마다 행동트리를 root부터 시작해서 실행함.
 
         if self.protect:
             self.protect_timer -= game_framework.frame_time

@@ -76,13 +76,12 @@ class Wraith:
 
 
     def update(self):
+        self.bt.run()  # 매 프레임마다 행동트리를 root부터 시작해서 실행함.
+
         if self.state == 'Walk':
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         else:
             self.frame = (self.frame + FRAMES_PER_APPEAR * APPEAR_PER_TIME * game_framework.frame_time) % FRAMES_PER_APPEAR
-
-
-        self.bt.run() # 매 프레임마다 행동트리를 root부터 시작해서 실행함.
 
         if self.protect:
             self.protect_timer -= game_framework.frame_time

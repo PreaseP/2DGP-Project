@@ -72,12 +72,12 @@ class Biri:
 
 
     def update(self):
+        self.bt.run()  # 매 프레임마다 행동트리를 root부터 시작해서 실행함.
+
         if self.state == 'Walk':
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         elif self.state == 'Attack':
             self.frame = (self.frame + FRAMES_PER_ATTACK * ATTACK_PER_TIME * game_framework.frame_time) % FRAMES_PER_ATTACK
-
-        self.bt.run() # 매 프레임마다 행동트리를 root부터 시작해서 실행함.
 
         if self.protect:
             self.protect_timer -= game_framework.frame_time
@@ -152,9 +152,16 @@ class Biri:
             return BehaviorTree.FAIL
 
     def attack_player(self):
-        self.state = 'Attack'
-        # 공격 범위 안에 들어왔는지 확인.
+        # 공격 상태 진입
+        if self.state != 'Attack':
+            self.state = 'Attack'
+            self.frame = 0
+
+        # 공격 범위 안에 있는지 확인
         if self.distance_less_than(common.player.x, common.player.y, self.x, self.y, self.r):
+            # 애니메이션이 끝났는지 확인
+            if self.frame >= FRAMES_PER_ATTACK - 0.1:
+                self.frame = 0  # 프레임 초기화 후 반복
             return BehaviorTree.SUCCESS
         else:
             self.frame = 0
