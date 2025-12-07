@@ -427,7 +427,10 @@ class PlayerS:
                     (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
         if userdata.relics['relic2'] == 2:
             self.atk *= 5.0
-        self.hp = userdata.maxHealth
+        self.hp = 3 + userdata.playerSkill['general'][1]
+        if userdata.relics['relic1'] == 2:
+            self.hp *= 6
+        self.max_hp = self.hp
         self.speed = 1.0 + 0.1 * (userdata.playerSkill['general'][2])
 
         self.weapon_time = 0.0
@@ -550,4 +553,3 @@ class PlayerS:
             self.skill1_cnt = 5
         elif userdata.playerWeapon['sword'][1] >= 2:
             self.skill1_cnt = 2
-

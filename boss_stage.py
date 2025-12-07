@@ -30,7 +30,7 @@ def init():
     game_world.add_object(common.map, 0)
 
     small_font = load_font('resources/DungGeunMo.TTF', 20)
-    bgm = load_music('resources/sound/stage1.mp3')
+    bgm = load_music('resources/sound/boss.mp3')
     bgm.set_volume(32)
     bgm.repeat_play()
 
@@ -59,7 +59,7 @@ def update():
 def draw():
     clear_canvas()
     game_world.render()
-    userdata.show_status(common.player.hp)
+    userdata.show_status(common.player.hp, common.player.max_hp)
 
     if userdata.playerType == 'S':
         if common.player.dash_time > 0.0:

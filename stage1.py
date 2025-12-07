@@ -96,8 +96,8 @@ def init():
     common.map = GeneralStage('stage1')
     game_world.add_object(common.map, 0)
 
-    common.map.left_border = 0
-    common.map.right_border = 1
+    common.map.left_border = 3
+    common.map.right_border = 4
 
     if userdata.playerType == 'S':
         common.player = PlayerS()
@@ -138,7 +138,7 @@ def update():
 def draw():
     clear_canvas()
     game_world.render()
-    userdata.show_status(common.player.hp)
+    userdata.show_status(common.player.hp, common.player.max_hp)
 
     if phaseClear:
         # 우측 상단에 'GO!' 표시

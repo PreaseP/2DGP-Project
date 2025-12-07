@@ -80,7 +80,7 @@ def update():
 def draw():
     clear_canvas()
     game_world.render()
-    userdata.show_status(common.player.hp)
+    userdata.show_status(common.player.hp, common.player.max_hp)
 
     if userdata.playerType == 'S':
         if common.player.dash_time > 0.0:

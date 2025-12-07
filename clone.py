@@ -28,7 +28,7 @@ class sClone:
         self.y = y
         self.frame = 0
         self.atk = atk
-        self.dx = target_x
+        self.dx = target_x - x
         self.dy = target_y - y
         self.face_dir = common.player.face_dir
         self.duration = 0.0

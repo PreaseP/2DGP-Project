@@ -9,10 +9,6 @@ playerSkill = {'general' : [0,0,0], 'sword' : [0,0], 'gun' : [0,0]}
 
 relics = {'relic1' : 0, 'relic2' : 0}
 
-maxHealth = 3 + playerSkill['general'][1] * 1
-if relics['relic1'] == 2:
-    maxHealth *= 6
-
 maxSkillLevel = {'general' : (5,5,5), 'sword' : (3, 2), 'gun' : (3, 2)}
 
 weaponPercent = [(60, 35, 5), (20, 65, 15), (15, 45, 40), (5, 20, 75)] # 무기 연성 확률 리스트
@@ -90,7 +86,7 @@ gunAtk = [10, 20, 40, 80]
 
 swordAtk = [10, 20, 40, 80]
 
-def show_status(health = 3):
+def show_status(health = 3, maxHealth = 3):
     global font
     font = load_font('resources/DungGeunMo.TTF', 20)
 

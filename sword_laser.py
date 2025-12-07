@@ -17,7 +17,7 @@ class sLaser:
         self.x = x
         self.y = y
         self.atk = atk
-        self.dx = target_x
+        self.dx = target_x - x
         self.dy = target_y - y
         dist = math.hypot(self.dx, self.dy)
         if dist == 0:

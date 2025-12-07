@@ -164,7 +164,7 @@ class Skill2:
             self.burst_atk *= 1.25  # 스킬2 공격력 증가
 
         self.player.burst_sound.play()
-        burst = Burst(self.player.x + self.player.xdir * 75, self.player.y, self.player.face_dir * get_canvas_width(), face_dir = self.player.face_dir, xdir = self.player.xdir, atk = self.burst_atk)
+        burst = Burst(self.player.x + self.player.xdir * 75, self.player.y, self.player.x + self.player.face_dir * get_canvas_width(), face_dir = self.player.face_dir, xdir = self.player.xdir, atk = self.burst_atk)
         game_world.add_object(burst, 1)
         game_world.add_collision_pair('bullet:monster', burst, None)
 
@@ -223,11 +223,11 @@ class Skill3:
         self.player.laser_sound.play()
         if userdata.playerWeapon['gun'][1] == 5:
             for k in range(2):
-                laser = Laser(self.player.x, self.player.y, self.player.face_dir * get_canvas_width(), self.player.y + 200 - 400 * k, atk=self.player.atk * 2.5, w= 225, h= 110)
+                laser = Laser(self.player.x, self.player.y, self.player.x + self.player.face_dir * get_canvas_width(), self.player.y + 200 - 400 * k, atk=self.player.atk * 2.5, w= 225, h= 110)
                 game_world.add_object(laser, 1)
                 game_world.add_collision_pair('bullet:monster', laser, None)
         elif userdata.playerWeapon['gun'][1] >= 2:
-            laser = Laser(self.player.x, self.player.y, self.player.face_dir * get_canvas_width(), self.player.y, atk=self.player.atk * 2.0, w= 200, h= 100)
+            laser = Laser(self.player.x, self.player.y, self.player.x + self.player.face_dir * get_canvas_width(), self.player.y, atk=self.player.atk * 2.0, w= 200, h= 100)
             game_world.add_object(laser, 1)
             game_world.add_collision_pair('bullet:monster', laser, None)
 
@@ -341,7 +341,10 @@ class PlayerG:
                     (1.0 + 0.1 * (userdata.playerSkill['general'][0])))
         if userdata.relics['relic2'] == 2:
             self.atk *= 5.0
-        self.hp = userdata.maxHealth
+        self.hp = 3 + userdata.playerSkill['general'][1]
+        if userdata.relics['relic1'] == 2:
+            self.hp *= 6
+        self.max_hp = self.hp
         self.speed = 1.0 + 0.1 * (userdata.playerSkill['general'][2])
 
         # 연속 발사 관련
@@ -402,11 +405,11 @@ class PlayerG:
             if self.slide is True and userdata.playerSkill['gun'][1] == 2:
                 heal = True
                 for i in range (100, -101, -200):
-                    b = Bullet(self.x, self.y, self.last_mouse_x + i * self.face_dir, self.last_mouse_y + i, atk=self.atk, heal=heal)
+                    b = Bullet(self.x, self.y, self.last_mouse_x + common.map.window_left, self.last_mouse_y + i, atk=self.atk, heal=heal)
                     game_world.add_object(b, 1)
                     game_world.add_collision_pair('bullet:monster', b, None)
             self.shot_sound.play()
-            b = Bullet(self.x, self.y, self.last_mouse_x, self.last_mouse_y, atk=self.atk, heal=heal)
+            b = Bullet(self.x, self.y, self.last_mouse_x + common.map.window_left, self.last_mouse_y, atk=self.atk, heal=heal)
             game_world.add_object(b, 1)
             game_world.add_collision_pair('bullet:monster', b, None)
             self.fire_cooldown = self.fire_interval
@@ -483,13 +486,16 @@ class PlayerG:
         for dir_x, dir_y in directions:
             target_x = self.x + dir_x
             target_y = self.y + dir_y
-            b = Bullet(self.x, self.y, target_x, target_y, atk = self.atk, piercing = True)
+            b = Bullet(self.x, self.y, self.x + target_x, target_y, atk = self.atk, piercing = True)
             game_world.add_object(b, 1)
             game_world.add_collision_pair('bullet:monster', b, None)
 
 
     def get_bb(self):
-        return self.x - 30, self.y - 40, self.x + 30, self.y + 40
+        sx = self.x - common.map.window_left  # 화면상의 x 위치
+        sy = self.y - common.map.window_bottom
+
+        return sx - 30, sy - 40, sx + 30, sy + 40
 
     def handle_collision(self, group, other):
         if group == 'player:monster' and self.protect == False:

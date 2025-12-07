@@ -20,8 +20,7 @@ class Relic:
     image = None
 
     def __init__(self, type = 0):
-        if Relic.image == None:
-            Relic.image = load_image('resources/sprites/relic' + str(type) + '.png')
+        Relic.image = load_image('resources/sprites/relic' + str(type) + '.png')
         self.x = common.borders[4] - 100
         self.y = 360
 
