@@ -96,8 +96,8 @@ def init():
     common.map = GeneralStage('stage1')
     game_world.add_object(common.map, 0)
 
-    common.map.left_border = 3
-    common.map.right_border = 4
+    common.map.left_border = 0
+    common.map.right_border = 1
 
     if userdata.playerType == 'S':
         common.player = PlayerS()
